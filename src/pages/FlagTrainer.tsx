@@ -194,6 +194,8 @@ const FlagTrainer = () => {
   const [options, setOptions] = useState<Country[]>([]);
   const [history, setHistory] = useState<Country[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
+  const [showCorrect, setShowCorrect] = useState(false);
 
   useEffect(() => {
     selectNewCountry();
@@ -218,9 +220,10 @@ const FlagTrainer = () => {
     setCurrentCountry(newCountry);
     setOptions(allOptions);
     setShowHint(false);
+    setWrongAnswer(null);
+    setShowCorrect(false);
 
     if (addToHistory) {
-      // Add to history and update index
       setHistory(prev => {
         const newHistory = [...prev.slice(0, historyIndex + 1), newCountry];
         setHistoryIndex(newHistory.length - 1);
@@ -232,12 +235,21 @@ const FlagTrainer = () => {
   const handleCorrectGuess = () => {
     setStreak(prev => prev + 1);
     setEncouragement(getEncouragement());
-    selectNewCountry();
+    // Wait a moment to show the correct answer highlight
+    setTimeout(selectNewCountry, 500);
   };
 
-  const handleIncorrectGuess = () => {
+  const handleIncorrectGuess = (selectedName: string) => {
     setStreak(0);
     setEncouragement('');
+    setWrongAnswer(selectedName);
+    setShowCorrect(true);
+    // Reset after 2 seconds
+    setTimeout(() => {
+      setWrongAnswer(null);
+      setShowCorrect(false);
+      selectNewCountry();
+    }, 2000);
   };
 
   const goBack = () => {
@@ -523,17 +535,28 @@ const FlagTrainer = () => {
                     if (country.name === currentCountry?.name) {
                       handleCorrectGuess();
                     } else {
-                      handleIncorrectGuess();
+                      handleIncorrectGuess(country.name);
                     }
                   }}
                   sx={{
                     py: 2,
-                    bgcolor: 'background.paper',
-                    color: 'text.primary',
+                    bgcolor: wrongAnswer === country.name 
+                      ? 'error.main' 
+                      : (showCorrect && country.name === currentCountry?.name)
+                        ? 'success.main'
+                        : 'background.paper',
+                    color: (wrongAnswer === country.name || (showCorrect && country.name === currentCountry?.name))
+                      ? 'white'
+                      : 'text.primary',
                     '&:hover': {
-                      bgcolor: 'primary.main',
+                      bgcolor: wrongAnswer === country.name 
+                        ? 'error.dark'
+                        : (showCorrect && country.name === currentCountry?.name)
+                          ? 'success.dark'
+                          : 'primary.main',
                       color: 'white',
                     },
+                    transition: 'all 0.2s ease-in-out',
                   }}
                 >
                   {country.name}

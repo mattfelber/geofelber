@@ -12,7 +12,7 @@ export const languages: Language[] = [
   // East Asian Languages
   {
     name: "Chinese",
-    sample: "你好，欢迎来到中国",
+    sample: "你好！中国人说中文。",
     hints: {
       writing: "Uses Chinese characters (hanzi). Characters are square-shaped and complex.",
       unique: "Tonal language with no alphabet, each character represents a morpheme.",
@@ -21,7 +21,7 @@ export const languages: Language[] = [
   },
   {
     name: "Japanese",
-    sample: "こんにちは、日本へようこそ",
+    sample: "こんにちは！カメラで写真を撮りました。",
     hints: {
       writing: "Mix of hiragana (rounded characters), katakana (angular characters), and kanji (Chinese characters).",
       unique: "Uses three writing systems together.",
@@ -30,7 +30,7 @@ export const languages: Language[] = [
   },
   {
     name: "Korean",
-    sample: "안녕하세요, 한국에 오신 것을 환영합니다",
+    sample: "안녕하세요! 한글은 아름다워요.",
     hints: {
       writing: "Uses Hangul alphabet with circular and straight lines.",
       unique: "Letters are grouped into syllable blocks.",
@@ -41,7 +41,7 @@ export const languages: Language[] = [
   // Southeast Asian Languages
   {
     name: "Thai",
-    sample: "สวัสดี ยินดีต้อนรับสู่ประเทศไทย",
+    sample: "สวัสดีค่ะประเทศไทยสวยงาม",
     hints: {
       writing: "Curvy script that hangs from a line, with vowel marks above and below.",
       unique: "No spaces between words, uses tone marks.",
@@ -50,7 +50,7 @@ export const languages: Language[] = [
   },
   {
     name: "Vietnamese",
-    sample: "Xin chào, chào mừng đến Việt Nam",
+    sample: "Xin chào! Tôi ăn phở và cơm.",
     hints: {
       writing: "Uses Latin alphabet with many diacritical marks.",
       unique: "Extensive use of tone marks above and below letters.",
@@ -59,7 +59,7 @@ export const languages: Language[] = [
   },
   {
     name: "Khmer",
-    sample: "សួស្តី សូមស្វាគមន៍មកកាន់ប្រទេសកម្ពុជា",
+    sample: "ស្រុកខ្មែរស្រស់បំព្រង",
     hints: {
       writing: "Round, curvy script with complex consonant clusters.",
       unique: "Letters have subscript forms that stack below.",
@@ -68,7 +68,7 @@ export const languages: Language[] = [
   },
   {
     name: "Lao",
-    sample: "ສະບາຍດີ, ຍິນດີຕ້ອນຮັບສູ່ປະເທດລາວ",
+    sample: "ສະບາຍດີຂອບໃຈຫຼາຍໆ",
     hints: {
       writing: "Similar to Thai but rounder, with fewer loops.",
       unique: "No spaces between words, simpler than Thai.",
@@ -77,7 +77,7 @@ export const languages: Language[] = [
   },
   {
     name: "Burmese",
-    sample: "မင်္ဂလာပါ၊ မြန်မာနိုင်ငံကို ကြိုဆိုပါတယ်",
+    sample: "မင်္ဂလာပါ ခင်ဗျား။",
     hints: {
       writing: "Circular letters with many stacked components.",
       unique: "Uses circular and semi-circular shapes extensively.",
@@ -88,7 +88,7 @@ export const languages: Language[] = [
   // South Asian Languages
   {
     name: "Bengali",
-    sample: "স্বাগতম, বাংলাদেশে আপনাকে স্বাগত",
+    sample: "বাংলা লিপি সুন্দর",
     hints: {
       writing: "Curvy script with a distinctive horizontal line on top.",
       unique: "Letters hang from a top line called matra.",
@@ -97,7 +97,7 @@ export const languages: Language[] = [
   },
   {
     name: "Hindi",
-    sample: "नमस्ते, भारत में आपका स्वागत है",
+    sample: "हिंदी भाषा बहुत सुंदर है",
     hints: {
       writing: "Devanagari script with a horizontal line on top.",
       unique: "Letters hang from top line, connected strokes.",
@@ -106,7 +106,7 @@ export const languages: Language[] = [
   },
   {
     name: "Tamil",
-    sample: "வணக்கம், இந்தியாவிற்கு வரவேற்கிறோம்",
+    sample: "தமிழ் எழுத்துகள்",
     hints: {
       writing: "Round shapes and curves, very few straight lines.",
       unique: "Characters often look like numbers or symbols.",
@@ -117,7 +117,7 @@ export const languages: Language[] = [
   // European Languages
   {
     name: "Greek",
-    sample: "Καλώς ήρθατε στην Ελλάδα",
+    sample: "Καλημέρα! Τα ελληνικά είναι όμορφα.",
     hints: {
       writing: "Greek alphabet with distinctive characters.",
       unique: "Mix of familiar and unfamiliar letters to English readers.",
@@ -126,7 +126,7 @@ export const languages: Language[] = [
   },
   {
     name: "Russian",
-    sample: "Добро пожаловать в Россию",
+    sample: "Я люблю русский язык!",
     hints: {
       writing: "Cyrillic alphabet with some letters similar to Latin.",
       unique: "Mix of familiar and unfamiliar letters to English readers.",
@@ -135,7 +135,7 @@ export const languages: Language[] = [
   },
   {
     name: "Ukrainian",
-    sample: "Ласкаво просимо до України",
+    sample: "Україна використовує ї та є.",
     hints: {
       writing: "Cyrillic alphabet with unique Ukrainian letters.",
       unique: "Uses і instead of и, and has ї and є.",
@@ -144,7 +144,7 @@ export const languages: Language[] = [
   },
   {
     name: "Bulgarian",
-    sample: "Добре дошли в България",
+    sample: "България използва ъ често.",
     hints: {
       writing: "Cyrillic alphabet similar to Russian.",
       unique: "Uses ъ more frequently than other Slavic languages.",
@@ -153,7 +153,7 @@ export const languages: Language[] = [
   },
   {
     name: "Serbian",
-    sample: "Добродошли у Србију",
+    sample: "Србија користи љ, њ, и џ.",
     hints: {
       writing: "Uses both Cyrillic and Latin alphabets.",
       unique: "Has letters љ, њ, џ in Cyrillic.",
@@ -162,7 +162,7 @@ export const languages: Language[] = [
   },
   {
     name: "Mongolian",
-    sample: "Монгол улсад тавтай морилно уу",
+    sample: "Өнөөдөр үзэсгэлэнтэй өдөр.",
     hints: {
       writing: "Uses Cyrillic alphabet with additional letters.",
       unique: "Has ө and ү letters not found in Russian.",
@@ -171,7 +171,7 @@ export const languages: Language[] = [
   },
   {
     name: "Georgian",
-    sample: "კეთილი იყოს თქვენი მობრძანება საქართველოში",
+    sample: "ქართული დამწერლობა ლამაზია",
     hints: {
       writing: "Unique curved script unlike any other.",
       unique: "Rounded letters with no capital letters.",
@@ -180,7 +180,7 @@ export const languages: Language[] = [
   },
   {
     name: "Armenian",
-    sample: "Բարի գալուստ Հայաստան",
+    sample: "Հայերեն այբուբեն գեղեցիկ է",
     hints: {
       writing: "Unique alphabet with distinctive curves and angles.",
       unique: "Letters have numerical values, used since 405 AD.",

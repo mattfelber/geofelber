@@ -31,6 +31,8 @@ const LanguageTrainer = () => {
   const [options, setOptions] = useState<Language[]>([]);
   const [history, setHistory] = useState<Language[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
+  const [showCorrect, setShowCorrect] = useState(false);
 
   useEffect(() => {
     selectNewLanguage();
@@ -55,9 +57,10 @@ const LanguageTrainer = () => {
     setCurrentLanguage(newLanguage);
     setOptions(allOptions);
     setShowHint(false);
+    setWrongAnswer(null);
+    setShowCorrect(false);
 
     if (addToHistory) {
-      // Add to history and update index
       setHistory(prev => {
         const newHistory = [...prev.slice(0, historyIndex + 1), newLanguage];
         setHistoryIndex(newHistory.length - 1);
@@ -69,12 +72,21 @@ const LanguageTrainer = () => {
   const handleCorrectGuess = () => {
     setStreak(prev => prev + 1);
     setEncouragement(getEncouragement());
-    selectNewLanguage();
+    // Wait a moment to show the correct answer highlight
+    setTimeout(selectNewLanguage, 500);
   };
 
-  const handleIncorrectGuess = () => {
+  const handleIncorrectGuess = (selectedName: string) => {
     setStreak(0);
     setEncouragement('');
+    setWrongAnswer(selectedName);
+    setShowCorrect(true);
+    // Reset after 2 seconds
+    setTimeout(() => {
+      setWrongAnswer(null);
+      setShowCorrect(false);
+      selectNewLanguage();
+    }, 2000);
   };
 
   const goBack = () => {
@@ -357,17 +369,28 @@ const LanguageTrainer = () => {
                     if (language.name === currentLanguage?.name) {
                       handleCorrectGuess();
                     } else {
-                      handleIncorrectGuess();
+                      handleIncorrectGuess(language.name);
                     }
                   }}
                   sx={{
                     py: 2,
-                    bgcolor: 'background.paper',
-                    color: 'text.primary',
+                    bgcolor: wrongAnswer === language.name 
+                      ? 'error.main' 
+                      : (showCorrect && language.name === currentLanguage?.name)
+                        ? 'success.main'
+                        : 'background.paper',
+                    color: (wrongAnswer === language.name || (showCorrect && language.name === currentLanguage?.name))
+                      ? 'white'
+                      : 'text.primary',
                     '&:hover': {
-                      bgcolor: 'primary.main',
+                      bgcolor: wrongAnswer === language.name 
+                        ? 'error.dark'
+                        : (showCorrect && language.name === currentLanguage?.name)
+                          ? 'success.dark'
+                          : 'primary.main',
                       color: 'white',
                     },
+                    transition: 'all 0.2s ease-in-out',
                   }}
                 >
                   {language.name}
