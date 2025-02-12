@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Language, languages } from '../data/languages';
 
 const getEncouragement = () => {
@@ -27,12 +29,14 @@ const LanguageTrainer = () => {
   const [streak, setStreak] = useState(0);
   const [encouragement, setEncouragement] = useState('');
   const [options, setOptions] = useState<Language[]>([]);
+  const [history, setHistory] = useState<Language[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     selectNewLanguage();
   }, []);
 
-  const selectNewLanguage = () => {
+  const selectNewLanguage = (addToHistory = true) => {
     let newLanguage;
     do {
       newLanguage = languages[Math.floor(Math.random() * languages.length)];
@@ -51,6 +55,15 @@ const LanguageTrainer = () => {
     setCurrentLanguage(newLanguage);
     setOptions(allOptions);
     setShowHint(false);
+
+    if (addToHistory) {
+      // Add to history and update index
+      setHistory(prev => {
+        const newHistory = [...prev.slice(0, historyIndex + 1), newLanguage];
+        setHistoryIndex(newHistory.length - 1);
+        return newHistory;
+      });
+    }
   };
 
   const handleCorrectGuess = () => {
@@ -62,6 +75,56 @@ const LanguageTrainer = () => {
   const handleIncorrectGuess = () => {
     setStreak(0);
     setEncouragement('');
+  };
+
+  const goBack = () => {
+    if (historyIndex > 0) {
+      const prevIndex = historyIndex - 1;
+      const prevLanguage = history[prevIndex];
+      setHistoryIndex(prevIndex);
+      
+      // Get 4 random wrong answers
+      const wrongOptions = languages
+        .filter(lang => lang.name !== prevLanguage.name)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 4);
+      
+      // Combine with correct answer and shuffle
+      const allOptions = [...wrongOptions, prevLanguage]
+        .sort(() => Math.random() - 0.5);
+      
+      setCurrentLanguage(prevLanguage);
+      setOptions(allOptions);
+      setShowHint(false);
+      setEncouragement('');
+    }
+  };
+
+  const goForward = () => {
+    if (historyIndex < history.length - 1) {
+      // Go to next item in history
+      const nextIndex = historyIndex + 1;
+      const nextLanguage = history[nextIndex];
+      setHistoryIndex(nextIndex);
+      
+      // Get 4 random wrong answers
+      const wrongOptions = languages
+        .filter(lang => lang.name !== nextLanguage.name)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 4);
+      
+      // Combine with correct answer and shuffle
+      const allOptions = [...wrongOptions, nextLanguage]
+        .sort(() => Math.random() - 0.5);
+      
+      setCurrentLanguage(nextLanguage);
+      setOptions(allOptions);
+      setShowHint(false);
+      setEncouragement('');
+    } else {
+      // Generate new language
+      selectNewLanguage();
+    }
   };
 
   if (!currentLanguage) return null;
@@ -99,23 +162,58 @@ const LanguageTrainer = () => {
         >
           Language Trainer
         </Typography>
-        <Typography 
-          variant="h6" 
-          color="text.secondary"
-          sx={{ mb: 2 }}
-        >
-          Current Streak: {streak}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={goBack}
+            disabled={historyIndex <= 0}
+            size="small"
+            sx={{
+              minWidth: '100px',
+            }}
+          >
+            Back
+          </Button>
+          <Typography 
+            variant="h6" 
+            color="text.secondary"
+            sx={{ 
+              px: 2,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            Streak: {streak}
+          </Typography>
+          <Button
+            variant="outlined"
+            endIcon={<ArrowForwardIcon />}
+            onClick={goForward}
+            size="small"
+            sx={{
+              minWidth: '100px',
+            }}
+          >
+            {historyIndex < history.length - 1 ? 'Forward' : 'Skip'}
+          </Button>
+        </Box>
         {encouragement && (
           <Typography 
             variant="h6" 
-            color="primary" 
+            color="primary"
             sx={{ 
               fontWeight: 700,
               animation: 'fadeIn 0.5s ease-in',
               '@keyframes fadeIn': {
-                '0%': { opacity: 0, transform: 'translateY(10px)' },
-                '100%': { opacity: 1, transform: 'translateY(0)' },
+                '0%': {
+                  opacity: 0,
+                  transform: 'translateY(-20px)',
+                },
+                '100%': {
+                  opacity: 1,
+                  transform: 'translateY(0)',
+                },
               },
             }}
           >
