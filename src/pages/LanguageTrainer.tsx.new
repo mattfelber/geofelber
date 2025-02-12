@@ -109,13 +109,19 @@ const LanguageTrainer = () => {
         {encouragement && (
           <Typography 
             variant="h6" 
-            color="primary" 
+            color="primary"
             sx={{ 
               fontWeight: 700,
               animation: 'fadeIn 0.5s ease-in',
               '@keyframes fadeIn': {
-                '0%': { opacity: 0, transform: 'translateY(10px)' },
-                '100%': { opacity: 1, transform: 'translateY(0)' },
+                '0%': {
+                  opacity: 0,
+                  transform: 'translateY(-20px)',
+                },
+                '100%': {
+                  opacity: 1,
+                  transform: 'translateY(0)',
+                },
               },
             }}
           >
@@ -175,67 +181,55 @@ const LanguageTrainer = () => {
                 </Typography>
               </Box>
 
-              <Box 
-                sx={{ 
-                  display: 'flex',
-                  gap: 2,
-                  flexWrap: 'wrap',
-                  justifyContent: 'center',
-                }}
-              >
-                <Tooltip title="Need a hint?">
+              {/* Hint Section */}
+              <Box sx={{ width: '100%' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
                   <IconButton
                     onClick={() => setShowHint(!showHint)}
-                    sx={{ 
-                      color: 'warning.main',
-                      bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
+                    color={showHint ? 'primary' : 'default'}
+                    sx={{
+                      transition: 'transform 0.2s',
                       '&:hover': {
-                        bgcolor: (theme) => alpha(theme.palette.warning.main, 0.2),
+                        transform: 'scale(1.1)',
                       },
                     }}
                   >
                     <LightbulbIcon />
                   </IconButton>
-                </Tooltip>
-              </Box>
-
-              <Collapse in={showHint} sx={{ width: '100%' }}>
-                <Paper 
-                  sx={{ 
-                    p: 3,
-                    bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
-                  }}
-                >
-                  <Box 
+                </Box>
+                <Collapse in={showHint}>
+                  <Paper 
+                    elevation={0}
                     sx={{ 
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      mb: 2,
+                      p: 2,
+                      bgcolor: theme => alpha(theme.palette.primary.main, 0.1),
+                      borderRadius: 2,
                     }}
                   >
-                    <Typography variant="h6" color="warning.main">
-                      Hints
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Hints
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={() => setShowHint(false)}
+                        sx={{ color: 'text.secondary' }}
+                      >
+                        <CloseIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                    <Typography variant="body1" paragraph>
+                      <strong>Writing System:</strong> {currentLanguage.hints.writing}
                     </Typography>
-                    <IconButton 
-                      size="small" 
-                      onClick={() => setShowHint(false)}
-                      sx={{ color: 'warning.main' }}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </Box>
-                  <Typography paragraph>
-                    <strong>Writing Style:</strong> {currentLanguage.hints.writing}
-                  </Typography>
-                  <Typography paragraph>
-                    <strong>Unique Features:</strong> {currentLanguage.hints.unique}
-                  </Typography>
-                  <Typography>
-                    <strong>Examples:</strong> {currentLanguage.hints.examples}
-                  </Typography>
-                </Paper>
-              </Collapse>
+                    <Typography variant="body1" paragraph>
+                      <strong>Unique Features:</strong> {currentLanguage.hints.unique}
+                    </Typography>
+                    <Typography variant="body1">
+                      <strong>Examples:</strong> {currentLanguage.hints.examples}
+                    </Typography>
+                  </Paper>
+                </Collapse>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
