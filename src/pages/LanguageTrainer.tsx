@@ -116,286 +116,262 @@ const getEncouragement = () => {
 
 const LanguageTrainer = () => {
   const [currentLanguage, setCurrentLanguage] = useState<Language | null>(null);
-  const [options, setOptions] = useState<string[]>([]);
-  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(0);
-  const [totalQuestions, setTotalQuestions] = useState<number>(0);
-  const [streak, setStreak] = useState<number>(0);
-  const [showHint, setShowHint] = useState<boolean>(false);
-  const [showFeedback, setShowFeedback] = useState<boolean>(false);
-
-  const generateQuestion = () => {
-    // Clear current language first to prevent any feedback flashing
-    setCurrentLanguage(null);
-    setShowResult(false);
-    setShowFeedback(false);
-    setSelectedAnswer('');
-    
-    // Small delay before showing new question
-    setTimeout(() => {
-      const randomLanguage = languages[Math.floor(Math.random() * languages.length)];
-      const wrongOptions = languages
-        .filter(lang => lang.name !== randomLanguage.name)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .map(lang => lang.name);
-      
-      const allOptions = [...wrongOptions, randomLanguage.name].sort(() => 0.5 - Math.random());
-      
-      setCurrentLanguage(randomLanguage);
-      setOptions(allOptions);
-      setShowHint(false);
-    }, 50);
-  };
-
-  const handleAnswer = (answer: string) => {
-    setSelectedAnswer(answer);
-    if (currentLanguage) {
-      setShowResult(true);
-      setShowFeedback(true);
-      setTotalQuestions(prev => prev + 1);
-      if (answer === currentLanguage.name) {
-        setScore(prev => prev + 1);
-        setStreak(prev => prev + 1);
-      } else {
-        setStreak(0);
-      }
-      setTimeout(() => {
-        generateQuestion();
-      }, 2000);
-    }
-  };
+  const [showHint, setShowHint] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [encouragement, setEncouragement] = useState('');
+  const [options, setOptions] = useState<Language[]>([]);
 
   useEffect(() => {
-    generateQuestion();
+    selectNewLanguage();
   }, []);
 
+  const selectNewLanguage = () => {
+    let newLanguage;
+    do {
+      newLanguage = languages[Math.floor(Math.random() * languages.length)];
+    } while (newLanguage === currentLanguage);
+    
+    // Get 4 random wrong answers
+    const wrongOptions = languages
+      .filter(lang => lang.name !== newLanguage.name)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4);
+    
+    // Combine with correct answer and shuffle
+    const allOptions = [...wrongOptions, newLanguage]
+      .sort(() => Math.random() - 0.5);
+    
+    setCurrentLanguage(newLanguage);
+    setOptions(allOptions);
+    setShowHint(false);
+  };
+
+  const handleCorrectGuess = () => {
+    setStreak(prev => prev + 1);
+    setEncouragement(getEncouragement());
+    selectNewLanguage();
+  };
+
+  const handleIncorrectGuess = () => {
+    setStreak(0);
+    setEncouragement('');
+  };
+
+  if (!currentLanguage) return null;
+
   return (
-    <Box sx={{ 
-      width: '100%',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      bgcolor: 'background.default',
-      py: { xs: 2, sm: 4 }
-    }}>
-      <Box sx={{ 
+    <Box 
+      sx={{ 
         width: '100%',
-        maxWidth: '800px',
+        maxWidth: '1200px',
         mx: 'auto',
-        px: { xs: 2, sm: 4 }
-      }}>
-        <Box 
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 4,
+      }}
+    >
+      {/* Header Section */}
+      <Box 
+        sx={{ 
+          width: '100%',
+          textAlign: 'center',
+          mb: 2,
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          gutterBottom
           sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            mb: { xs: 3, sm: 5 },
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 2, sm: 0 }
+            fontWeight: 700,
+            background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
           }}
         >
+          Language Trainer
+        </Typography>
+        <Typography 
+          variant="h6" 
+          color="text.secondary"
+          sx={{ mb: 2 }}
+        >
+          Current Streak: {streak}
+        </Typography>
+        {encouragement && (
           <Typography 
-            variant="h4" 
+            variant="h6" 
+            color="primary" 
             sx={{ 
-              color: 'primary.main',
-              fontSize: { xs: '1.75rem', sm: '2.5rem' },
-              fontWeight: 600
+              fontWeight: 700,
+              animation: 'fadeIn 0.5s ease-in',
+              '@keyframes fadeIn': {
+                '0%': { opacity: 0, transform: 'translateY(10px)' },
+                '100%': { opacity: 1, transform: 'translateY(0)' },
+              },
             }}
           >
-            Language Trainer
+            {encouragement}
           </Typography>
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              gap: 3,
-              width: { xs: '100%', sm: 'auto' }
-            }}
-          >
-            <Paper 
-              sx={{ 
-                px: { xs: 3, sm: 4 }, 
-                py: { xs: 1.5, sm: 2 }, 
-                flex: { xs: 1, sm: 'auto' },
-                minWidth: { sm: '160px' },
-                textAlign: 'center',
-                bgcolor: 'primary.main', 
-                color: 'white',
-                borderRadius: 2
-              }}
-            >
-              <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.3rem' } }}>
-                Score: {score}/{totalQuestions}
-              </Typography>
-            </Paper>
-            <Paper 
-              sx={{ 
-                px: { xs: 3, sm: 4 }, 
-                py: { xs: 1.5, sm: 2 }, 
-                flex: { xs: 1, sm: 'auto' },
-                minWidth: { sm: '160px' },
-                textAlign: 'center',
-                bgcolor: 'secondary.main', 
-                color: 'white',
-                borderRadius: 2
-              }}
-            >
-              <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.3rem' } }}>
-                Streak: {streak} 🔥
-              </Typography>
-            </Paper>
-          </Box>
-        </Box>
+        )}
+      </Box>
 
-        {currentLanguage && (
+      {/* Main Content */}
+      <Grid 
+        container 
+        spacing={{ xs: 2, md: 4 }}
+        sx={{ 
+          width: '100%',
+          justifyContent: 'center',
+        }}
+      >
+        {/* Sample Text Card */}
+        <Grid item xs={12} md={8}>
           <Card 
-            elevation={4} 
             sx={{ 
-              borderRadius: 3,
-              bgcolor: 'background.paper',
-              boxShadow: theme => `0 8px 32px ${alpha(theme.palette.primary.main, 0.1)}`
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                mb: 3 
-              }}>
+            <CardContent 
+              sx={{ 
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: { xs: 2, md: 3 },
+                p: { xs: 2, md: 4 },
+              }}
+            >
+              <Box 
+                sx={{ 
+                  width: '100%',
+                  bgcolor: 'background.paper',
+                  p: { xs: 2, md: 4 },
+                  borderRadius: 2,
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                }}
+              >
                 <Typography 
                   variant="h5" 
                   sx={{ 
-                    color: 'text.primary',
-                    fontSize: { xs: '1.25rem', sm: '1.75rem' },
-                    fontWeight: 500
+                    fontSize: { xs: '1.25rem', md: '2rem' },
+                    lineHeight: 1.8,
+                    letterSpacing: '0.02em',
                   }}
                 >
-                  Which language is this?
+                  {currentLanguage.sample}
                 </Typography>
-                <Tooltip title={showHint ? "Hide hint" : "Show hint"}>
-                  <IconButton 
+              </Box>
+
+              <Box 
+                sx={{ 
+                  display: 'flex',
+                  gap: 2,
+                  flexWrap: 'wrap',
+                  justifyContent: 'center',
+                }}
+              >
+                <Tooltip title="Need a hint?">
+                  <IconButton
                     onClick={() => setShowHint(!showHint)}
                     sx={{ 
-                      color: showHint ? 'secondary.main' : 'text.secondary',
-                      '&:hover': { color: 'secondary.main' }
+                      color: 'warning.main',
+                      bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
+                      '&:hover': {
+                        bgcolor: (theme) => alpha(theme.palette.warning.main, 0.2),
+                      },
                     }}
                   >
-                    {showHint ? <CloseIcon /> : <LightbulbIcon />}
+                    <LightbulbIcon />
                   </IconButton>
                 </Tooltip>
               </Box>
 
-              <Collapse in={showHint}>
+              <Collapse in={showHint} sx={{ width: '100%' }}>
                 <Paper 
                   sx={{ 
-                    p: { xs: 2, sm: 3 }, 
-                    mb: 4, 
-                    bgcolor: alpha('#fff', 0.6),
-                    border: '1px solid',
-                    borderColor: 'secondary.main',
-                    borderRadius: 2
+                    p: 3,
+                    bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
                   }}
                 >
-                  <Typography variant="subtitle1" color="secondary.main" gutterBottom>
-                    How to identify this script:
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    {currentLanguage.hints.writing}
-                  </Typography>
-                  <Typography variant="body1">
-                    {currentLanguage.hints.examples}
-                  </Typography>
-                </Paper>
-              </Collapse>
-              
-              <Paper 
-                elevation={3} 
-                sx={{ 
-                  p: { xs: 3, sm: 5 }, 
-                  mb: { xs: 3, sm: 4 }, 
-                  bgcolor: alpha('#fff', 0.8),
-                  borderRadius: 3,
-                  textAlign: 'center',
-                  fontSize: { xs: '1.25rem', sm: '2rem' },
-                  fontWeight: 500
-                }}
-              >
-                {currentLanguage.sample}
-              </Paper>
-
-              <Grid 
-                container 
-                spacing={2}
-                sx={{ 
-                  maxWidth: '700px', 
-                  mx: 'auto',
-                  mt: { xs: 1, sm: 2 }
-                }}
-              >
-                {options.map((option) => (
-                  <Grid item xs={12} sm={6} key={option}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      size="large"
-                      onClick={() => !showResult && handleAnswer(option)}
-                      disabled={showResult}
-                      sx={{
-                        py: { xs: 1.5, sm: 2.5 },
-                        fontSize: { xs: '1rem', sm: '1.2rem' },
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        bgcolor: showResult
-                          ? option === currentLanguage.name
-                            ? 'success.main'
-                            : option === selectedAnswer
-                              ? 'error.main'
-                              : 'primary.main'
-                          : 'primary.main',
-                        '&:hover': {
-                          bgcolor: showResult
-                            ? option === currentLanguage.name
-                              ? 'success.dark'
-                              : option === selectedAnswer
-                                ? 'error.dark'
-                                : 'primary.dark'
-                            : 'primary.dark'
-                        }
-                      }}
+                  <Box 
+                    sx={{ 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h6" color="warning.main">
+                      Hints
+                    </Typography>
+                    <IconButton 
+                      size="small" 
+                      onClick={() => setShowHint(false)}
+                      sx={{ color: 'warning.main' }}
                     >
-                      {option}
-                    </Button>
-                  </Grid>
-                ))}
-              </Grid>
-
-              <Collapse in={showFeedback && showResult}>
-                <Paper 
-                  sx={{ 
-                    p: { xs: 2, sm: 3 },
-                    mt: { xs: 2, sm: 3 },
-                    textAlign: 'center',
-                    bgcolor: selectedAnswer === currentLanguage?.name ? 'success.main' : 'error.main',
-                    color: 'white',
-                    borderRadius: 2,
-                    fontSize: { xs: '1.1rem', sm: '1.3rem' }
-                  }}
-                >
-                  <Typography variant="h6">
-                    {selectedAnswer === currentLanguage?.name 
-                      ? getEncouragement()
-                      : currentLanguage?.quickTip
-                    }
+                      <CloseIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography paragraph>
+                    <strong>Writing Style:</strong> {currentLanguage.hints.writing}
+                  </Typography>
+                  <Typography paragraph>
+                    <strong>Unique Features:</strong> {currentLanguage.hints.unique}
+                  </Typography>
+                  <Typography>
+                    <strong>Examples:</strong> {currentLanguage.hints.examples}
                   </Typography>
                 </Paper>
               </Collapse>
             </CardContent>
           </Card>
-        )}
-      </Box>
+        </Grid>
+
+        {/* Buttons Grid */}
+        <Grid item xs={12} md={8}>
+          <Grid 
+            container 
+            spacing={2} 
+            sx={{ 
+              justifyContent: 'center',
+              width: '100%',
+            }}
+          >
+            {options.map((language) => (
+              <Grid item xs={12} sm={6} md={4} key={language.name}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={() => {
+                    if (language.name === currentLanguage?.name) {
+                      handleCorrectGuess();
+                    } else {
+                      handleIncorrectGuess();
+                    }
+                  }}
+                  sx={{
+                    py: 2,
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                    },
+                  }}
+                >
+                  {language.name}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

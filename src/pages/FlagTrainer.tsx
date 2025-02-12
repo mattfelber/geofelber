@@ -186,289 +186,265 @@ const getEncouragement = () => {
 
 const FlagTrainer = () => {
   const [currentCountry, setCurrentCountry] = useState<Country | null>(null);
-  const [options, setOptions] = useState<string[]>([]);
-  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(0);
-  const [totalQuestions, setTotalQuestions] = useState<number>(0);
-  const [streak, setStreak] = useState<number>(0);
-  const [showHint, setShowHint] = useState<boolean>(false);
-  const [showFeedback, setShowFeedback] = useState<boolean>(false);
-
-  const generateQuestion = () => {
-    setCurrentCountry(null);
-    setShowResult(false);
-    setShowFeedback(false);
-    setSelectedAnswer('');
-    
-    setTimeout(() => {
-      const randomCountry = countries[Math.floor(Math.random() * countries.length)];
-      const wrongOptions = countries
-        .filter(country => country.name !== randomCountry.name)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .map(country => country.name);
-      
-      const allOptions = [...wrongOptions, randomCountry.name].sort(() => 0.5 - Math.random());
-      
-      setCurrentCountry(randomCountry);
-      setOptions(allOptions);
-      setShowHint(false);
-    }, 50);
-  };
-
-  const handleAnswer = (answer: string) => {
-    setSelectedAnswer(answer);
-    if (currentCountry) {
-      setShowResult(true);
-      setShowFeedback(true);
-      setTotalQuestions(prev => prev + 1);
-      if (answer === currentCountry.name) {
-        setScore(prev => prev + 1);
-        setStreak(prev => prev + 1);
-      } else {
-        setStreak(0);
-      }
-      setTimeout(() => {
-        generateQuestion();
-      }, 2000);
-    }
-  };
+  const [showHint, setShowHint] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [encouragement, setEncouragement] = useState('');
+  const [options, setOptions] = useState<Country[]>([]);
 
   useEffect(() => {
-    generateQuestion();
+    selectNewCountry();
   }, []);
 
+  const selectNewCountry = () => {
+    let newCountry;
+    do {
+      newCountry = countries[Math.floor(Math.random() * countries.length)];
+    } while (newCountry === currentCountry);
+    
+    // Get 4 random wrong answers
+    const wrongOptions = countries
+      .filter(c => c.name !== newCountry.name)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4);
+    
+    // Combine with correct answer and shuffle
+    const allOptions = [...wrongOptions, newCountry]
+      .sort(() => Math.random() - 0.5);
+    
+    setCurrentCountry(newCountry);
+    setOptions(allOptions);
+    setShowHint(false);
+  };
+
+  const handleCorrectGuess = () => {
+    setStreak(prev => prev + 1);
+    setEncouragement(getEncouragement());
+    selectNewCountry();
+  };
+
+  const handleIncorrectGuess = () => {
+    setStreak(0);
+    setEncouragement('');
+  };
+
+  if (!currentCountry) return null;
+
   return (
-    <Box sx={{ 
-      width: '100%',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      bgcolor: 'background.default',
-      py: { xs: 2, sm: 4 }
-    }}>
-      <Box sx={{ 
+    <Box 
+      sx={{ 
         width: '100%',
-        maxWidth: '800px',
+        maxWidth: '1200px',
         mx: 'auto',
-        px: { xs: 2, sm: 4 }
-      }}>
-        <Box 
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 4,
+      }}
+    >
+      {/* Header Section */}
+      <Box 
+        sx={{ 
+          width: '100%',
+          textAlign: 'center',
+          mb: 2,
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          gutterBottom
           sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            mb: { xs: 3, sm: 5 },
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 2, sm: 0 }
+            fontWeight: 700,
+            background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
           }}
         >
+          Flag Trainer
+        </Typography>
+        <Typography 
+          variant="h6" 
+          color="text.secondary"
+          sx={{ mb: 2 }}
+        >
+          Current Streak: {streak}
+        </Typography>
+        {encouragement && (
           <Typography 
-            variant="h4" 
+            variant="h6" 
+            color="primary" 
             sx={{ 
-              color: 'primary.main',
-              fontSize: { xs: '1.75rem', sm: '2.5rem' },
-              fontWeight: 600
+              fontWeight: 700,
+              animation: 'fadeIn 0.5s ease-in',
+              '@keyframes fadeIn': {
+                '0%': { opacity: 0, transform: 'translateY(10px)' },
+                '100%': { opacity: 1, transform: 'translateY(0)' },
+              },
             }}
           >
-            Flag Trainer
+            {encouragement}
           </Typography>
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              gap: 3,
-              width: { xs: '100%', sm: 'auto' }
-            }}
-          >
-            <Paper 
-              sx={{ 
-                px: { xs: 3, sm: 4 }, 
-                py: { xs: 1.5, sm: 2 }, 
-                flex: { xs: 1, sm: 'auto' },
-                minWidth: { sm: '160px' },
-                textAlign: 'center',
-                bgcolor: 'primary.main', 
-                color: 'white',
-                borderRadius: 2
-              }}
-            >
-              <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.3rem' } }}>
-                Score: {score}/{totalQuestions}
-              </Typography>
-            </Paper>
-            <Paper 
-              sx={{ 
-                px: { xs: 3, sm: 4 }, 
-                py: { xs: 1.5, sm: 2 }, 
-                flex: { xs: 1, sm: 'auto' },
-                minWidth: { sm: '160px' },
-                textAlign: 'center',
-                bgcolor: 'secondary.main', 
-                color: 'white',
-                borderRadius: 2
-              }}
-            >
-              <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.3rem' } }}>
-                Streak: {streak} 🔥
-              </Typography>
-            </Paper>
-          </Box>
-        </Box>
+        )}
+      </Box>
 
-        {currentCountry && (
+      {/* Main Content */}
+      <Grid 
+        container 
+        spacing={{ xs: 2, md: 4 }}
+        sx={{ 
+          width: '100%',
+          justifyContent: 'center',
+        }}
+      >
+        {/* Flag Card */}
+        <Grid item xs={12} md={8}>
           <Card 
-            elevation={4} 
             sx={{ 
-              borderRadius: 3,
-              bgcolor: 'background.paper',
-              boxShadow: theme => `0 8px 32px ${alpha(theme.palette.primary.main, 0.1)}`
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                mb: 3 
-              }}>
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    color: 'text.primary',
-                    fontSize: { xs: '1.25rem', sm: '1.75rem' },
-                    fontWeight: 500
-                  }}
-                >
-                  Which country's flag is this?
-                </Typography>
-                <Tooltip title={showHint ? "Hide hint" : "Show hint"}>
-                  <IconButton 
-                    onClick={() => setShowHint(!showHint)}
-                    sx={{ 
-                      color: showHint ? 'secondary.main' : 'text.secondary',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
-                    {showHint ? <CloseIcon /> : <LightbulbIcon />}
-                  </IconButton>
-                </Tooltip>
-              </Box>
-
-              <Collapse in={showHint}>
-                <Paper 
-                  sx={{ 
-                    p: { xs: 2, sm: 3 }, 
-                    mb: 4, 
-                    bgcolor: alpha('#fff', 0.6),
-                    border: '1px solid',
-                    borderColor: 'secondary.main',
-                    borderRadius: 2
-                  }}
-                >
-                  <Typography variant="subtitle1" color="secondary.main" gutterBottom>
-                    Flag characteristics:
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    {currentCountry.hints.colors}
-                  </Typography>
-                  <Typography variant="body1">
-                    {currentCountry.hints.symbols}
-                  </Typography>
-                </Paper>
-              </Collapse>
-              
+            <CardContent 
+              sx={{ 
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: { xs: 2, md: 3 },
+                p: { xs: 2, md: 4 },
+              }}
+            >
               <Box 
                 sx={{ 
+                  width: '100%',
+                  bgcolor: 'background.paper',
+                  p: { xs: 2, md: 4 },
+                  borderRadius: 2,
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'divider',
                   display: 'flex',
                   justifyContent: 'center',
-                  mb: { xs: 3, sm: 4 }
+                  alignItems: 'center',
                 }}
               >
-                <img 
-                  src={`https://flagcdn.com/${currentCountry.code.toLowerCase()}.svg`}
+                <Box
+                  component="img"
+                  src={`https://flagcdn.com/w640/${currentCountry.code}.png`}
                   alt={`Flag of ${currentCountry.name}`}
-                  style={{ 
-                    width: '100%',
-                    maxWidth: '400px',
+                  sx={{
+                    maxWidth: '100%',
                     height: 'auto',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    maxHeight: { xs: '120px', md: '200px' },
                   }}
                 />
               </Box>
 
-              <Grid 
-                container 
-                spacing={2}
+              <Box 
                 sx={{ 
-                  maxWidth: '700px', 
-                  mx: 'auto',
-                  mt: { xs: 1, sm: 2 }
+                  display: 'flex',
+                  gap: 2,
+                  flexWrap: 'wrap',
+                  justifyContent: 'center',
                 }}
               >
-                {options.map((option) => (
-                  <Grid item xs={12} sm={6} key={option}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      size="large"
-                      onClick={() => !showResult && handleAnswer(option)}
-                      disabled={showResult}
-                      sx={{
-                        py: { xs: 1.5, sm: 2.5 },
-                        fontSize: { xs: '1rem', sm: '1.2rem' },
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        bgcolor: showResult
-                          ? option === currentCountry.name
-                            ? 'success.main'
-                            : option === selectedAnswer
-                              ? 'error.main'
-                              : 'primary.main'
-                          : 'primary.main',
-                        '&:hover': {
-                          bgcolor: showResult
-                            ? option === currentCountry.name
-                              ? 'success.dark'
-                              : option === selectedAnswer
-                                ? 'error.dark'
-                                : 'primary.dark'
-                            : 'primary.dark'
-                        }
-                      }}
-                    >
-                      {option}
-                    </Button>
-                  </Grid>
-                ))}
-              </Grid>
+                <Tooltip title="Need a hint?">
+                  <IconButton
+                    onClick={() => setShowHint(!showHint)}
+                    sx={{ 
+                      color: 'warning.main',
+                      bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
+                      '&:hover': {
+                        bgcolor: (theme) => alpha(theme.palette.warning.main, 0.2),
+                      },
+                    }}
+                  >
+                    <LightbulbIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
 
-              <Collapse in={showFeedback && showResult}>
+              <Collapse in={showHint} sx={{ width: '100%' }}>
                 <Paper 
                   sx={{ 
-                    p: { xs: 2, sm: 3 },
-                    mt: { xs: 2, sm: 3 },
-                    textAlign: 'center',
-                    bgcolor: selectedAnswer === currentCountry?.name ? 'success.main' : 'error.main',
-                    color: 'white',
-                    borderRadius: 2,
-                    fontSize: { xs: '1.1rem', sm: '1.3rem' }
+                    p: 3,
+                    bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
                   }}
                 >
-                  <Typography variant="h6">
-                    {selectedAnswer === currentCountry?.name 
-                      ? getEncouragement()
-                      : currentCountry?.quickTip
-                    }
+                  <Box 
+                    sx={{ 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h6" color="warning.main">
+                      Hints
+                    </Typography>
+                    <IconButton 
+                      size="small" 
+                      onClick={() => setShowHint(false)}
+                      sx={{ color: 'warning.main' }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography paragraph>
+                    <strong>Colors:</strong> {currentCountry.hints.colors}
+                  </Typography>
+                  <Typography paragraph>
+                    <strong>Symbols:</strong> {currentCountry.hints.symbols}
+                  </Typography>
+                  <Typography>
+                    <strong>Pattern:</strong> {currentCountry.hints.pattern}
                   </Typography>
                 </Paper>
               </Collapse>
             </CardContent>
           </Card>
-        )}
-      </Box>
+        </Grid>
+
+        {/* Buttons Grid */}
+        <Grid item xs={12} md={8}>
+          <Grid 
+            container 
+            spacing={2} 
+            sx={{ 
+              justifyContent: 'center',
+              width: '100%',
+            }}
+          >
+            {options.map((country) => (
+              <Grid item xs={12} sm={6} md={4} key={country.name}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={() => {
+                    if (country.name === currentCountry?.name) {
+                      handleCorrectGuess();
+                    } else {
+                      handleIncorrectGuess();
+                    }
+                  }}
+                  sx={{
+                    py: 2,
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                    },
+                  }}
+                >
+                  {country.name}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

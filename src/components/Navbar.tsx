@@ -39,9 +39,20 @@ const Navbar = () => {
       sx={{ 
         bgcolor: 'background.paper',
         boxShadow: 1,
+        width: '100vw',
+        left: 0,
+        right: 0,
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <Toolbar 
+        sx={{ 
+          justifyContent: 'space-between',
+          maxWidth: 'lg',
+          width: '100%',
+          mx: 'auto',
+          px: { xs: 2, sm: 3, md: 4 },
+        }}
+      >
         <Box 
           component={RouterLink} 
           to="/" 
