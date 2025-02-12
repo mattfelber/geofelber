@@ -9,6 +9,19 @@ import SchoolIcon from '@mui/icons-material/School';
 const Home = () => {
   const navigate = useNavigate();
 
+  const handleStartTraining = () => {
+    // On mobile, scroll to modules
+    if (window.innerWidth < 600) {
+      const modulesSection = document.getElementById('training-modules');
+      if (modulesSection) {
+        modulesSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // On desktop, go directly to Language Trainer
+      navigate('/language-trainer');
+    }
+  };
+
   const features = [
     {
       title: 'Language Trainer',
@@ -68,73 +81,67 @@ const Home = () => {
             <Button 
               variant="contained" 
               size="large"
-              onClick={() => navigate('/language-trainer')}
+              onClick={handleStartTraining}
               startIcon={<SchoolIcon />}
             >
               Start Training
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="large"
-              onClick={() => navigate('/flag-trainer')}
-              startIcon={<EmojiEventsIcon />}
-            >
-              Test Your Skills
             </Button>
           </Box>
         </Box>
       </Paper>
 
       {/* Features Section */}
-      <Typography 
-        variant="h4" 
-        sx={{ 
-          mb: 4,
-          textAlign: 'center',
-          fontWeight: 700,
-        }}
-      >
-        Training Modules
-      </Typography>
-      
-      <Grid container spacing={4}>
-        {features.map((feature) => (
-          <Grid item xs={12} md={6} key={feature.title}>
-            <Card 
-              sx={{ 
-                height: '100%',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: (theme) => `0 8px 24px ${theme.palette.primary.main}20`,
-                }
-              }}
-            >
-              <CardActionArea 
-                onClick={() => navigate(feature.path)}
-                sx={{ height: '100%' }}
+      <Box id="training-modules">
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            mb: 4,
+            textAlign: 'center',
+            fontWeight: 700,
+          }}
+        >
+          Training Modules
+        </Typography>
+        
+        <Grid container spacing={4}>
+          {features.map((feature) => (
+            <Grid item xs={12} md={6} key={feature.title}>
+              <Card 
+                sx={{ 
+                  height: '100%',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 8px 24px ${theme.palette.primary.main}20`,
+                  }
+                }}
               >
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ mb: 2 }}>
-                    {feature.icon}
-                  </Box>
-                  <Typography 
-                    gutterBottom 
-                    variant="h5" 
-                    component="h3"
-                    sx={{ fontWeight: 700 }}
-                  >
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {feature.description}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                <CardActionArea 
+                  onClick={() => navigate(feature.path)}
+                  sx={{ height: '100%' }}
+                >
+                  <CardContent sx={{ p: 4 }}>
+                    <Box sx={{ mb: 2 }}>
+                      {feature.icon}
+                    </Box>
+                    <Typography 
+                      gutterBottom 
+                      variant="h5" 
+                      component="h3"
+                      sx={{ fontWeight: 700 }}
+                    >
+                      {feature.title}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      {feature.description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 };
