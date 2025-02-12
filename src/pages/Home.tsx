@@ -1,39 +1,32 @@
-import { Box, Typography, Card, CardContent, CardActionArea, Grid, Button, Container, Paper } from '@mui/material';
+import { Box, Typography, Card, CardContent, CardActionArea, Grid, Button, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PublicIcon from '@mui/icons-material/Public';
 import LanguageIcon from '@mui/icons-material/Language';
 import FlagIcon from '@mui/icons-material/Flag';
-import PublicIcon from '@mui/icons-material/Public';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import SchoolIcon from '@mui/icons-material/School';
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleStartTraining = () => {
     // On mobile, scroll to modules
-    if (window.innerWidth < 600) {
-      const modulesSection = document.getElementById('training-modules');
-      if (modulesSection) {
-        modulesSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      // On desktop, go directly to Language Trainer
-      navigate('/language-trainer');
+    const modulesSection = document.getElementById('training-modules');
+    if (modulesSection) {
+      modulesSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const features = [
+  const modules = [
     {
       title: 'Language Trainer',
-      description: 'Master the art of identifying languages from different regions. Perfect your GeoGuessr skills by learning to recognize text patterns and unique characters.',
+      description: 'Test your ability to identify languages from around the world. Learn to recognize different writing systems and unique characters.',
       icon: <LanguageIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
-      path: '/language-trainer'
+      path: 'language-trainer'
     },
     {
       title: 'Flag Trainer',
       description: 'Become an expert at recognizing country flags. Learn the subtle differences between similar flags and improve your quick identification skills.',
       icon: <FlagIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
-      path: '/flag-trainer'
+      path: 'flag-trainer'
     }
   ];
 
@@ -101,7 +94,6 @@ const Home = () => {
               variant="contained" 
               size="large"
               onClick={handleStartTraining}
-              startIcon={<SchoolIcon />}
             >
               Start Training
             </Button>
@@ -138,8 +130,8 @@ const Home = () => {
             justifyContent: 'center',
           }}
         >
-          {features.map((feature) => (
-            <Grid item xs={12} md={6} key={feature.title}>
+          {modules.map((module) => (
+            <Grid item xs={12} md={6} key={module.title}>
               <Card 
                 sx={{ 
                   height: '100%',
@@ -151,7 +143,7 @@ const Home = () => {
                 }}
               >
                 <CardActionArea 
-                  onClick={() => navigate(feature.path)}
+                  onClick={() => navigate(module.path)}
                   sx={{ height: '100%' }}
                 >
                   <CardContent sx={{ 
@@ -162,7 +154,7 @@ const Home = () => {
                     textAlign: 'center',
                   }}>
                     <Box sx={{ mb: 2 }}>
-                      {feature.icon}
+                      {module.icon}
                     </Box>
                     <Typography 
                       gutterBottom 
@@ -170,10 +162,10 @@ const Home = () => {
                       component="h3"
                       sx={{ fontWeight: 700 }}
                     >
-                      {feature.title}
+                      {module.title}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      {feature.description}
+                      {module.description}
                     </Typography>
                   </CardContent>
                 </CardActionArea>
