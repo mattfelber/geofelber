@@ -71,20 +71,27 @@ function App() {
           width: '100%',
         }}>
           <Navbar />
-          <Box sx={{
-            flex: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%',
-            px: { xs: 2, sm: 3, md: 4 },
-          }}>
+          <Box 
+            component="main"
+            sx={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+              px: { xs: 2, sm: 3, md: 4 },
+              py: { xs: 2, sm: 3, md: 4 },
+              overflow: 'auto',
+            }}
+          >
             <Container 
               maxWidth="lg"
               sx={{ 
                 display: 'flex',
                 flexDirection: 'column',
-                py: { xs: 2, sm: 4 },
+                alignItems: 'center',
                 width: '100%',
+                maxWidth: { xs: '100%', sm: '90%', md: '80%' },
+                mx: 'auto',
               }}
             >
               <Routes>

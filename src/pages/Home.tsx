@@ -38,7 +38,13 @@ const Home = () => {
   ];
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ 
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: { xs: 6, md: 8 },
+    }}>
       {/* Hero Section */}
       <Paper 
         elevation={0}
@@ -47,11 +53,23 @@ const Home = () => {
           borderRadius: 4,
           overflow: 'hidden',
           position: 'relative',
-          mb: 6,
+          width: '100%',
           p: { xs: 4, md: 6 },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
         }}
       >
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
+        <Box sx={{ 
+          position: 'relative',
+          zIndex: 1,
+          maxWidth: '800px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
           <PublicIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
           <Typography 
             variant="h2" 
@@ -63,6 +81,7 @@ const Home = () => {
               background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
+              maxWidth: '100%',
             }}
           >
             Welcome to GeoFelber
@@ -72,12 +91,12 @@ const Home = () => {
             sx={{ 
               mb: 4,
               color: 'text.secondary',
-              maxWidth: '800px',
+              maxWidth: '600px',
             }}
           >
             Level up your GeoGuessr game with our specialized training tools. Master languages and flags to become a location-guessing expert!
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
             <Button 
               variant="contained" 
               size="large"
@@ -91,7 +110,15 @@ const Home = () => {
       </Paper>
 
       {/* Features Section */}
-      <Box id="training-modules">
+      <Box 
+        id="training-modules" 
+        sx={{ 
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Typography 
           variant="h4" 
           sx={{ 
@@ -103,7 +130,14 @@ const Home = () => {
           Training Modules
         </Typography>
         
-        <Grid container spacing={4}>
+        <Grid 
+          container 
+          spacing={4} 
+          sx={{ 
+            width: '100%',
+            justifyContent: 'center',
+          }}
+        >
           {features.map((feature) => (
             <Grid item xs={12} md={6} key={feature.title}>
               <Card 
@@ -120,7 +154,13 @@ const Home = () => {
                   onClick={() => navigate(feature.path)}
                   sx={{ height: '100%' }}
                 >
-                  <CardContent sx={{ p: 4 }}>
+                  <CardContent sx={{ 
+                    p: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                  }}>
                     <Box sx={{ mb: 2 }}>
                       {feature.icon}
                     </Box>
