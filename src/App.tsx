@@ -68,27 +68,32 @@ function App() {
           flexDirection: 'column', 
           minHeight: '100vh',
           bgcolor: 'background.default',
+          width: '100%',
         }}>
           <Navbar />
-          <Container 
-            component="main" 
-            sx={{ 
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              py: { xs: 2, sm: 4 },
-              px: { xs: 1, sm: 2 },
-              maxWidth: { sm: '100%', md: '900px' } 
-            }}
-          >
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/language-trainer" element={<LanguageTrainer />} />
-              <Route path="/flag-trainer" element={<FlagTrainer />} />
-            </Routes>
-          </Container>
+          <Box sx={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%',
+            px: { xs: 2, sm: 3, md: 4 },
+          }}>
+            <Container 
+              maxWidth="lg"
+              sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                py: { xs: 2, sm: 4 },
+                width: '100%',
+              }}
+            >
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/language-trainer" element={<LanguageTrainer />} />
+                <Route path="/flag-trainer" element={<FlagTrainer />} />
+              </Routes>
+            </Container>
+          </Box>
         </Box>
       </Router>
     </ThemeProvider>
