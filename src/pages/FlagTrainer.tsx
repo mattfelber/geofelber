@@ -196,6 +196,7 @@ const FlagTrainer = () => {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     selectNewCountry();
@@ -233,13 +234,20 @@ const FlagTrainer = () => {
   };
 
   const handleCorrectGuess = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setStreak(prev => prev + 1);
     setEncouragement(getEncouragement());
     // Wait a moment to show the correct answer highlight
-    setTimeout(selectNewCountry, 500);
+    setTimeout(() => {
+      selectNewCountry();
+      setIsTransitioning(false);
+    }, 500);
   };
 
   const handleIncorrectGuess = (selectedName: string) => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setStreak(0);
     setEncouragement('');
     setWrongAnswer(selectedName);
@@ -249,11 +257,13 @@ const FlagTrainer = () => {
       setWrongAnswer(null);
       setShowCorrect(false);
       selectNewCountry();
+      setIsTransitioning(false);
     }, 2000);
   };
 
   const goBack = () => {
-    if (historyIndex > 0) {
+    if (historyIndex > 0 && !isTransitioning) {
+      setIsTransitioning(true);
       const prevIndex = historyIndex - 1;
       const prevCountry = history[prevIndex];
       setHistoryIndex(prevIndex);
@@ -272,10 +282,15 @@ const FlagTrainer = () => {
       setOptions(allOptions);
       setShowHint(false);
       setEncouragement('');
+      setWrongAnswer(null);
+      setShowCorrect(false);
+      setIsTransitioning(false);
     }
   };
 
   const goForward = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     if (historyIndex < history.length - 1) {
       // Go to next item in history
       const nextIndex = historyIndex + 1;
@@ -296,10 +311,13 @@ const FlagTrainer = () => {
       setOptions(allOptions);
       setShowHint(false);
       setEncouragement('');
+      setWrongAnswer(null);
+      setShowCorrect(false);
     } else {
       // Generate new country
       selectNewCountry();
     }
+    setIsTransitioning(false);
   };
 
   if (!currentCountry) return null;
@@ -342,7 +360,7 @@ const FlagTrainer = () => {
             variant="outlined"
             startIcon={<ArrowBackIcon />}
             onClick={goBack}
-            disabled={historyIndex <= 0}
+            disabled={historyIndex <= 0 || isTransitioning}
             size="small"
             sx={{
               minWidth: '100px',
@@ -365,12 +383,13 @@ const FlagTrainer = () => {
             variant="outlined"
             endIcon={<ArrowForwardIcon />}
             onClick={goForward}
+            disabled={isTransitioning}
             size="small"
             sx={{
               minWidth: '100px',
             }}
           >
-            {historyIndex < history.length - 1 ? 'Forward' : 'Skip'}
+            Skip
           </Button>
         </Box>
         {encouragement && (
@@ -538,6 +557,7 @@ const FlagTrainer = () => {
                       handleIncorrectGuess(country.name);
                     }
                   }}
+                  disabled={isTransitioning}
                   sx={{
                     py: 2,
                     bgcolor: wrongAnswer === country.name 
