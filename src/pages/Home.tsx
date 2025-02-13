@@ -8,11 +8,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleStartTraining = () => {
-    // On mobile, scroll to modules
-    const modulesSection = document.getElementById('training-modules');
-    if (modulesSection) {
-      modulesSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/flag-trainer');
   };
 
   const modules = [

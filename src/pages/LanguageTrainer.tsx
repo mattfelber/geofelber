@@ -355,8 +355,11 @@ const LanguageTrainer = () => {
                   <Typography paragraph sx={{ mb: 1 }}>
                     <strong>Unique Features:</strong> {currentLanguage.hints.unique}
                   </Typography>
-                  <Typography>
+                  <Typography paragraph sx={{ mb: 1 }}>
                     <strong>Examples:</strong> {currentLanguage.hints.examples}
+                  </Typography>
+                  <Typography paragraph sx={{ mb: 1 }}>
+                    <strong>Regions:</strong> {currentLanguage.hints.regions}
                   </Typography>
                 </Paper>
               </Collapse>
