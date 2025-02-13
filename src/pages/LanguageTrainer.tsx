@@ -33,12 +33,14 @@ const LanguageTrainer = () => {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     selectNewLanguage();
   }, []);
 
   const selectNewLanguage = (addToHistory = true) => {
+    setIsTransitioning(true);
     let newLanguage;
     do {
       newLanguage = languages[Math.floor(Math.random() * languages.length)];
@@ -67,16 +69,32 @@ const LanguageTrainer = () => {
         return newHistory;
       });
     }
+    setTimeout(() => setIsTransitioning(false), 300);
   };
 
   const handleCorrectGuess = () => {
-    setStreak(prev => prev + 1);
-    setEncouragement(getEncouragement());
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    
+    // Only increment streak if:
+    // 1. We're at the latest point in history (not reviewing)
+    // 2. This is a new language we haven't seen before
+    const isReviewing = historyIndex < history.length - 1;
+    if (!isReviewing && currentLanguage && !seenLanguages.has(currentLanguage.name)) {
+      setStreak(prev => prev + 1);
+      setEncouragement(getEncouragement());
+    }
+    
     // Wait a moment to show the correct answer highlight
-    setTimeout(selectNewLanguage, 500);
+    setTimeout(() => {
+      selectNewLanguage();
+      setIsTransitioning(false);
+    }, 500);
   };
 
   const handleIncorrectGuess = (selectedName: string) => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setStreak(0);
     setEncouragement('');
     setWrongAnswer(selectedName);
@@ -86,6 +104,7 @@ const LanguageTrainer = () => {
       setWrongAnswer(null);
       setShowCorrect(false);
       selectNewLanguage();
+      setIsTransitioning(false);
     }, 2000);
   };
 
@@ -372,6 +391,7 @@ const LanguageTrainer = () => {
                       handleIncorrectGuess(language.name);
                     }
                   }}
+                  disabled={isTransitioning}
                   sx={{
                     py: 2,
                     bgcolor: wrongAnswer === language.name 
@@ -390,7 +410,18 @@ const LanguageTrainer = () => {
                           : 'primary.main',
                       color: 'white',
                     },
-                    transition: 'all 0.2s ease-in-out',
+                    transition: 'all 0.3s ease-in-out',
+                    transform: wrongAnswer === language.name || (showCorrect && language.name === currentLanguage?.name)
+                      ? 'scale(1.05)'
+                      : 'scale(1)',
+                    boxShadow: wrongAnswer === language.name || (showCorrect && language.name === currentLanguage?.name)
+                      ? '0 4px 20px rgba(0, 0, 0, 0.2)'
+                      : 'none',
+                    border: wrongAnswer === language.name
+                      ? '2px solid #d32f2f'
+                      : (showCorrect && language.name === currentLanguage?.name)
+                        ? '2px solid #2e7d32'
+                        : '2px solid transparent',
                   }}
                 >
                   {language.name}

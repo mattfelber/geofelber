@@ -376,10 +376,12 @@ const FlagTrainer = () => {
               mx: 0,
               display: 'flex',
               flexWrap: 'wrap',
+              justifyContent: 'center',
               '& .MuiGrid-item': {
                 pl: '16px !important',
                 pr: '16px !important',
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
+                maxWidth: { md: '250px' }
               }
             }}
           >
@@ -421,7 +423,18 @@ const FlagTrainer = () => {
                           : 'primary.main',
                       color: 'white',
                     },
-                    transition: 'all 0.2s ease-in-out',
+                    transition: 'all 0.3s ease-in-out',
+                    transform: wrongAnswer === country.name || (showCorrect && country.name === currentCountry?.name)
+                      ? 'scale(1.05)'
+                      : 'scale(1)',
+                    boxShadow: wrongAnswer === country.name || (showCorrect && country.name === currentCountry?.name)
+                      ? '0 4px 20px rgba(0, 0, 0, 0.2)'
+                      : 'none',
+                    border: wrongAnswer === country.name
+                      ? '2px solid #d32f2f'
+                      : (showCorrect && country.name === currentCountry?.name)
+                        ? '2px solid #2e7d32'
+                        : '2px solid transparent',
                   }}
                 >
                   {country.name}
