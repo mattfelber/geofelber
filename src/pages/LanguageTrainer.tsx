@@ -34,6 +34,7 @@ const LanguageTrainer = () => {
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [seenLanguages, setSeenLanguages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     selectNewLanguage();
@@ -48,7 +49,7 @@ const LanguageTrainer = () => {
     
     // Get 4 random wrong answers
     const wrongOptions = languages
-      .filter(lang => lang.name !== newLanguage.name)
+      .filter(c => c.name !== newLanguage.name)
       .sort(() => Math.random() - 0.5)
       .slice(0, 4);
     
@@ -63,6 +64,7 @@ const LanguageTrainer = () => {
     setShowCorrect(false);
 
     if (addToHistory) {
+      setSeenLanguages(prev => new Set(prev).add(newLanguage.name));
       setHistory(prev => {
         const newHistory = [...prev.slice(0, historyIndex + 1), newLanguage];
         setHistoryIndex(newHistory.length - 1);
@@ -403,11 +405,13 @@ const LanguageTrainer = () => {
                       ? 'white'
                       : 'text.primary',
                     '&:hover': {
-                      bgcolor: wrongAnswer === language.name 
-                        ? 'error.dark'
-                        : (showCorrect && language.name === currentLanguage?.name)
-                          ? 'success.dark'
-                          : 'primary.main',
+                      bgcolor: 'background.paper',
+                      '@media (hover: none)': {
+                        bgcolor: 'background.paper',
+                      }
+                    },
+                    '&:active': {
+                      bgcolor: 'primary.main',
                       color: 'white',
                     },
                     transition: 'all 0.3s ease-in-out',
@@ -422,6 +426,13 @@ const LanguageTrainer = () => {
                       : (showCorrect && language.name === currentLanguage?.name)
                         ? '2px solid #2e7d32'
                         : '2px solid transparent',
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    '@media (hover: none)': {
+                      '&:hover': {
+                        bgcolor: 'background.paper'
+                      }
+                    }
                   }}
                 >
                   {language.name}

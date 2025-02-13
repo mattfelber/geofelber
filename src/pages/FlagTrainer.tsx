@@ -4,16 +4,10 @@ import {
   Button, 
   Card, 
   CardContent, 
-  Collapse, 
   Grid, 
-  IconButton, 
-  Paper, 
-  Tooltip, 
-  Typography,
-  alpha 
+  Typography 
 } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
@@ -23,9 +17,6 @@ interface Country {
   name: string;
   code: string;
   hints: {
-    colors: string;
-    symbols: string;
-    pattern: string;
     fact1: string;
     fact2: string;
     fact3: string;
@@ -416,11 +407,13 @@ const FlagTrainer = () => {
                       ? 'white'
                       : 'text.primary',
                     '&:hover': {
-                      bgcolor: wrongAnswer === country.name 
-                        ? 'error.dark'
-                        : (showCorrect && country.name === currentCountry?.name)
-                          ? 'success.dark'
-                          : 'primary.main',
+                      bgcolor: 'background.paper',
+                      '@media (hover: none)': {
+                        bgcolor: 'background.paper',
+                      }
+                    },
+                    '&:active': {
+                      bgcolor: 'primary.main',
                       color: 'white',
                     },
                     transition: 'all 0.3s ease-in-out',
@@ -435,6 +428,13 @@ const FlagTrainer = () => {
                       : (showCorrect && country.name === currentCountry?.name)
                         ? '2px solid #2e7d32'
                         : '2px solid transparent',
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    '@media (hover: none)': {
+                      '&:hover': {
+                        bgcolor: 'background.paper'
+                      }
+                    }
                   }}
                 >
                   {country.name}
