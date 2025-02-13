@@ -391,6 +391,7 @@ const LanguageTrainer = () => {
             sx={{ 
               justifyContent: 'center',
               width: '100%',
+              px: { xs: 2, md: 4 }
             }}
           >
             {options.map((language) => (
