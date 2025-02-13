@@ -100,14 +100,17 @@ const FlagTrainer = () => {
     const isReviewing = historyIndex < history.length - 1;
     if (!isReviewing && currentCountry && !seenFlags.has(currentCountry.code)) {
       setStreak(prev => prev + 1);
-      setEncouragement(getEncouragement());
     }
+    
+    // Always show encouragement on correct answer
+    setEncouragement(getEncouragement());
+    setShowCorrect(true);
     
     // Wait a moment to show the correct answer highlight
     setTimeout(() => {
       selectNewCountry();
       setIsTransitioning(false);
-    }, 500);
+    }, 1000);
   };
 
   const handleIncorrectGuess = (selectedName: string) => {
@@ -257,28 +260,6 @@ const FlagTrainer = () => {
             Skip
           </Button>
         </Box>
-        {encouragement && (
-          <Typography 
-            variant="h6" 
-            color="primary"
-            sx={{ 
-              fontWeight: 700,
-              animation: 'fadeIn 0.5s ease-in',
-              '@keyframes fadeIn': {
-                '0%': {
-                  opacity: 0,
-                  transform: 'translateY(-20px)',
-                },
-                '100%': {
-                  opacity: 1,
-                  transform: 'translateY(0)',
-                },
-              },
-            }}
-          >
-            {encouragement}
-          </Typography>
-        )}
       </Box>
 
       {/* Main Content */}
@@ -363,6 +344,29 @@ const FlagTrainer = () => {
                   >
                     Show Facts
                   </Button>
+                )}
+                {encouragement && (
+                  <Typography 
+                    variant="h6" 
+                    color="primary"
+                    sx={{ 
+                      fontWeight: 700,
+                      animation: 'fadeIn 0.5s ease-in',
+                      '@keyframes fadeIn': {
+                        '0%': {
+                          opacity: 0,
+                          transform: 'translateY(-20px)',
+                        },
+                        '100%': {
+                          opacity: 1,
+                          transform: 'translateY(0)',
+                        },
+                      },
+                      mt: 2
+                    }}
+                  >
+                    {encouragement}
+                  </Typography>
                 )}
               </Box>
             </CardContent>

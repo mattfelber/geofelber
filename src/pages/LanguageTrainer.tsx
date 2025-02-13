@@ -96,8 +96,11 @@ const LanguageTrainer = () => {
     const isReviewing = historyIndex < history.length - 1;
     if (!isReviewing && currentLanguage && !seenLanguages.has(currentLanguage.name)) {
       setStreak(prev => prev + 1);
-      setEncouragement(getEncouragement());
     }
+    
+    // Always show encouragement on correct answer
+    setEncouragement(getEncouragement());
+    setShowCorrect(true);
     
     // Wait a moment to show the correct answer highlight
     setTimeout(() => {
@@ -243,28 +246,6 @@ const LanguageTrainer = () => {
             {historyIndex < history.length - 1 ? 'Forward' : 'Skip'}
           </Button>
         </Box>
-        {encouragement && (
-          <Typography 
-            variant="h6" 
-            color="primary"
-            sx={{ 
-              fontWeight: 700,
-              animation: 'fadeIn 0.5s ease-in',
-              '@keyframes fadeIn': {
-                '0%': {
-                  opacity: 0,
-                  transform: 'translateY(-20px)',
-                },
-                '100%': {
-                  opacity: 1,
-                  transform: 'translateY(0)',
-                },
-              },
-            }}
-          >
-            {encouragement}
-          </Typography>
-        )}
       </Box>
 
       {/* Main Content */}
@@ -379,6 +360,30 @@ const LanguageTrainer = () => {
                   </Typography>
                 </Paper>
               </Collapse>
+
+              {encouragement && (
+                <Typography 
+                  variant="h6" 
+                  color="primary"
+                  sx={{ 
+                    fontWeight: 700,
+                    animation: 'fadeIn 0.5s ease-in',
+                    '@keyframes fadeIn': {
+                      '0%': {
+                        opacity: 0,
+                        transform: 'translateY(-20px)',
+                      },
+                      '100%': {
+                        opacity: 1,
+                        transform: 'translateY(0)',
+                      },
+                    },
+                    mt: 2
+                  }}
+                >
+                  {encouragement}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
