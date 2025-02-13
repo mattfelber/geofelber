@@ -39,18 +39,19 @@ const Navbar = () => {
       sx={{ 
         bgcolor: 'background.paper',
         boxShadow: 1,
-        width: '100vw',
-        left: 0,
-        right: 0,
+        width: '100%',
+        minWidth: '100%',
+        margin: 0,
+        padding: 0
       }}
     >
       <Toolbar 
         sx={{ 
           justifyContent: 'space-between',
-          maxWidth: 'lg',
           width: '100%',
-          mx: 'auto',
+          minWidth: '100%',
           px: { xs: 2, sm: 3, md: 4 },
+          margin: 0
         }}
       >
         <Box 

@@ -68,7 +68,10 @@ function App() {
           flexDirection: 'column', 
           minHeight: '100vh',
           bgcolor: 'background.default',
-          width: '100%',
+          width: '100vw',
+          margin: 0,
+          padding: 0,
+          overflowX: 'hidden'
         }}>
           <Navbar />
           <Box 
@@ -77,20 +80,17 @@ function App() {
               flex: 1,
               display: 'flex',
               justifyContent: 'center',
-              width: '100%',
               px: { xs: 2, sm: 3, md: 4 },
               py: { xs: 2, sm: 3, md: 4 },
               overflow: 'auto',
             }}
           >
             <Container 
-              maxWidth="lg"
+              maxWidth={false}
               sx={{ 
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                width: '100%',
-                maxWidth: { xs: '100%', sm: '90%', md: '80%' },
                 mx: 'auto',
               }}
             >
