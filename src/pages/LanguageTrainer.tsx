@@ -45,6 +45,13 @@ const LanguageTrainer = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }, [options]);
 
+  useEffect(() => {
+    // Scroll to bottom whenever hints are shown
+    if (showHint) {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  }, [showHint]);
+
   const selectNewLanguage = (addToHistory = true) => {
     setIsTransitioning(true);
     let newLanguage;
