@@ -315,7 +315,7 @@ const LanguageTrainer = () => {
                       bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
                       '&:hover': {
                         bgcolor: (theme) => alpha(theme.palette.warning.main, 0.2),
-                      },
+                      }
                     }}
                   >
                     <LightbulbIcon />
@@ -326,7 +326,7 @@ const LanguageTrainer = () => {
               <Collapse in={showHint} sx={{ width: '100%' }}>
                 <Paper 
                   sx={{ 
-                    p: 3,
+                    p: 2,
                     bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
                   }}
                 >
@@ -335,7 +335,7 @@ const LanguageTrainer = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      mb: 2,
+                      mb: 1,
                     }}
                   >
                     <Typography variant="h6" color="warning.main">
@@ -349,10 +349,10 @@ const LanguageTrainer = () => {
                       <CloseIcon />
                     </IconButton>
                   </Box>
-                  <Typography paragraph>
+                  <Typography paragraph sx={{ mb: 1 }}>
                     <strong>Writing Style:</strong> {currentLanguage.hints.writing}
                   </Typography>
-                  <Typography paragraph>
+                  <Typography paragraph sx={{ mb: 1 }}>
                     <strong>Unique Features:</strong> {currentLanguage.hints.unique}
                   </Typography>
                   <Typography>

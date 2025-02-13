@@ -51,13 +51,6 @@ const FlagTrainer = () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }, [options]);
 
-  useEffect(() => {
-    // Scroll to bottom whenever hints are shown
-    if (showHint) {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-  }, [showHint]);
-
   const selectNewCountry = (addToHistory = true) => {
     let newCountry;
     do {
@@ -188,6 +181,10 @@ const FlagTrainer = () => {
     setIsTransitioning(false);
   };
 
+  const handleShowHint = () => {
+    setShowHint(true);
+  };
+
   if (!currentCountry) return null;
 
   return (
@@ -290,6 +287,35 @@ const FlagTrainer = () => {
                 p: { xs: 2, md: 4 },
               }}
             >
+              <Box sx={{ width: '100%', mb: 2 }}>
+                {!showHint && (
+                  <Button
+                    startIcon={<LightbulbIcon />}
+                    onClick={handleShowHint}
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                  >
+                    Show Facts
+                  </Button>
+                )}
+                {showHint && currentCountry && (
+                  <Card sx={{ p: 2, bgcolor: 'background.paper' }}>
+                    <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                      <Typography paragraph sx={{ mb: 1 }}>
+                        {currentCountry.hints.fact1}
+                      </Typography>
+                      <Typography paragraph sx={{ mb: 1 }}>
+                        {currentCountry.hints.fact2}
+                      </Typography>
+                      <Typography>
+                        {currentCountry.hints.fact3}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                )}
+              </Box>
+
               <Box 
                 sx={{ 
                   width: '100%',
@@ -316,59 +342,29 @@ const FlagTrainer = () => {
                 />
               </Box>
 
-              <Box sx={{ mt: 2, mb: 4 }}>
-                <Typography variant="h6" gutterBottom>
-                  Did you know?
-                </Typography>
-                {showHint && currentCountry && (
-                  <Card sx={{ p: 2, bgcolor: 'background.paper' }}>
-                    <CardContent>
-                      <Typography paragraph>
-                        {currentCountry.hints.fact1}
-                      </Typography>
-                      <Typography paragraph>
-                        {currentCountry.hints.fact2}
-                      </Typography>
-                      <Typography paragraph>
-                        {currentCountry.hints.fact3}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                )}
-                {!showHint && (
-                  <Button
-                    startIcon={<LightbulbIcon />}
-                    onClick={() => setShowHint(true)}
-                    variant="outlined"
-                    color="primary"
-                  >
-                    Show Facts
-                  </Button>
-                )}
-                {encouragement && (
-                  <Typography 
-                    variant="h6" 
-                    color="primary"
-                    sx={{ 
-                      fontWeight: 700,
-                      animation: 'fadeIn 0.5s ease-in',
-                      '@keyframes fadeIn': {
-                        '0%': {
-                          opacity: 0,
-                          transform: 'translateY(-20px)',
-                        },
-                        '100%': {
-                          opacity: 1,
-                          transform: 'translateY(0)',
-                        },
+              {encouragement && (
+                <Typography 
+                  variant="h6" 
+                  color="primary"
+                  sx={{ 
+                    fontWeight: 700,
+                    animation: 'fadeIn 0.5s ease-in',
+                    '@keyframes fadeIn': {
+                      '0%': {
+                        opacity: 0,
+                        transform: 'translateY(-20px)',
                       },
-                      mt: 2
-                    }}
-                  >
-                    {encouragement}
-                  </Typography>
-                )}
-              </Box>
+                      '100%': {
+                        opacity: 1,
+                        transform: 'translateY(0)',
+                      },
+                    },
+                    mt: 2
+                  }}
+                >
+                  {encouragement}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
