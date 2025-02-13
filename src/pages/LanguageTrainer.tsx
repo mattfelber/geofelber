@@ -40,6 +40,11 @@ const LanguageTrainer = () => {
     selectNewLanguage();
   }, []);
 
+  useEffect(() => {
+    // Scroll to bottom whenever options change
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, [options]);
+
   const selectNewLanguage = (addToHistory = true) => {
     setIsTransitioning(true);
     let newLanguage;

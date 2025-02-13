@@ -46,6 +46,11 @@ const FlagTrainer = () => {
     selectNewCountry();
   }, []);
 
+  useEffect(() => {
+    // Scroll to bottom whenever options change
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, [options]);
+
   const selectNewCountry = (addToHistory = true) => {
     let newCountry;
     do {
