@@ -332,12 +332,20 @@ const FlagTrainer = () => {
               >
                 <Box
                   component="img"
-                  src={`https://flagcdn.com/w640/${currentCountry.code}.png`}
+                  src={`/flags/${currentCountry.code.toLowerCase()}.png`}
                   alt={`Flag of ${currentCountry.name}`}
+                  onError={(e) => {
+                    console.error(`Failed to load flag for ${currentCountry.name}`);
+                    // Fallback to flagcdn.com if local file fails
+                    e.currentTarget.src = `https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`;
+                  }}
                   sx={{
-                    maxWidth: '100%',
+                    width: '100%',
+                    maxWidth: '500px',
                     height: 'auto',
-                    maxHeight: { xs: '120px', md: '200px' },
+                    objectFit: 'contain',
+                    borderRadius: 1,
+                    boxShadow: 3,
                   }}
                 />
               </Box>
