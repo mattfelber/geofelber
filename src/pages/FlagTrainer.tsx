@@ -86,6 +86,7 @@ const FlagTrainer = () => {
   const handleCorrectGuess = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
+    setShowCorrect(true);  // Set this immediately
     
     // Only increment streak if:
     // 1. We're at the latest point in history (not reviewing)
@@ -97,7 +98,6 @@ const FlagTrainer = () => {
     
     // Always show encouragement on correct answer
     setEncouragement(getEncouragement());
-    setShowCorrect(true);
     
     // Wait a moment to show the correct answer highlight
     setTimeout(() => {
@@ -330,22 +330,22 @@ const FlagTrainer = () => {
                   alignItems: 'center',
                 }}
               >
-                <Box
-                  component="img"
-                  src={`/flags/${currentCountry.code.toLowerCase()}.png`}
+                <img
+                  src={`./flags/${currentCountry.code.toLowerCase()}.png`}
                   alt={`Flag of ${currentCountry.name}`}
                   onError={(e) => {
                     console.error(`Failed to load flag for ${currentCountry.name}`);
                     // Fallback to flagcdn.com if local file fails
                     e.currentTarget.src = `https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`;
                   }}
-                  sx={{
+                  style={{
                     width: '100%',
                     maxWidth: '500px',
                     height: 'auto',
-                    objectFit: 'contain',
-                    borderRadius: 1,
-                    boxShadow: 3,
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.2s ease-in-out',
+                    cursor: 'pointer',
                   }}
                 />
               </Box>
@@ -427,13 +427,25 @@ const FlagTrainer = () => {
                       ? 'white'
                       : 'text.primary',
                     '&:hover': {
-                      bgcolor: 'background.paper',
+                      bgcolor: wrongAnswer === country.name 
+                        ? 'error.main' 
+                        : (showCorrect && country.name === currentCountry?.name)
+                          ? 'success.main'
+                          : 'background.paper',
                       '@media (hover: none)': {
-                        bgcolor: 'background.paper',
+                        bgcolor: wrongAnswer === country.name 
+                          ? 'error.main' 
+                          : (showCorrect && country.name === currentCountry?.name)
+                            ? 'success.main'
+                            : 'background.paper'
                       }
                     },
                     '&:active': {
-                      bgcolor: 'primary.main',
+                      bgcolor: wrongAnswer === country.name 
+                        ? 'error.main' 
+                        : (showCorrect && country.name === currentCountry?.name)
+                          ? 'success.main'
+                          : 'primary.main',
                       color: 'white',
                     },
                     transition: 'all 0.3s ease-in-out',
@@ -450,9 +462,16 @@ const FlagTrainer = () => {
                         : '2px solid transparent',
                     touchAction: 'manipulation',
                     WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none',
+                    '-webkit-user-select': 'none',
+                    '-webkit-touch-callout': 'none',
                     '@media (hover: none)': {
                       '&:hover': {
-                        bgcolor: 'background.paper'
+                        bgcolor: wrongAnswer === country.name 
+                          ? 'error.main' 
+                          : (showCorrect && country.name === currentCountry?.name)
+                            ? 'success.main'
+                            : 'background.paper'
                       }
                     }
                   }}
