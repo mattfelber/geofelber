@@ -223,37 +223,48 @@ const FlagTrainer = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 4,
-        minHeight: '100vh', // Ensure minimum full viewport height
-        py: 4, // Consistent padding
+        gap: 3,
+        minHeight: '100vh',
+        py: { xs: 2, md: 4 },
+        px: { xs: 2, md: 0 },
+        position: 'relative',
       }}
     >
-      {/* Header Section */}
+      {/* Header Section with fixed height */}
       <Box 
         sx={{ 
           width: '100%',
           textAlign: 'center',
-          mb: 2,
-          height: '120px', // Fixed height for header
+          height: { xs: '100px', md: '120px' },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
+          position: 'relative',
+          mb: { xs: 1, md: 2 },
         }}
       >
         <Typography 
           variant="h4" 
           component="h1" 
-          gutterBottom
           sx={{ 
             fontWeight: 700,
             background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            mb: 2,
           }}
         >
           Flag Trainer
         </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            gap: 2,
+            flexWrap: 'nowrap',
+          }}
+        >
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
@@ -261,7 +272,9 @@ const FlagTrainer = () => {
             disabled={historyIndex <= 0 || isTransitioning}
             size="small"
             sx={{
-              minWidth: '100px',
+              minWidth: { xs: '80px', sm: '100px' },
+              height: '36px',
+              flexShrink: 0,
             }}
           >
             Back
@@ -274,6 +287,9 @@ const FlagTrainer = () => {
               display: 'flex',
               alignItems: 'center',
               gap: 1,
+              minWidth: '150px',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
             <Box component="span">Streak: {streak}</Box>
@@ -302,7 +318,9 @@ const FlagTrainer = () => {
             disabled={isTransitioning}
             size="small"
             sx={{
-              minWidth: '100px',
+              minWidth: { xs: '80px', sm: '100px' },
+              height: '36px',
+              flexShrink: 0,
             }}
           >
             Skip
@@ -310,14 +328,14 @@ const FlagTrainer = () => {
         </Box>
       </Box>
 
-      {/* Main Content */}
+      {/* Main Content with fixed heights */}
       <Grid 
         container 
-        spacing={{ xs: 2, md: 4 }}
+        spacing={3}
         sx={{ 
           width: '100%',
           justifyContent: 'center',
-          flex: 1, // Take remaining space
+          flex: 1,
         }}
       >
         {/* Flag Card */}
@@ -327,7 +345,8 @@ const FlagTrainer = () => {
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
-              minHeight: '500px', // Minimum height for flag card
+              minHeight: { xs: '450px', md: '500px' },
+              maxHeight: { xs: '600px', md: '700px' },
             }}
           >
             <CardContent 
@@ -336,29 +355,52 @@ const FlagTrainer = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: { xs: 2, md: 3 },
-                p: { xs: 2, md: 4 },
+                gap: 2,
+                p: { xs: 2, md: 3 },
+                height: '100%',
               }}
             >
+              {/* Facts Section with fixed height */}
               <Box sx={{ 
-                width: '100%', 
+                width: '100%',
+                height: { xs: '120px', md: '150px' },
                 mb: 2,
-                minHeight: '48px', // Fixed height for hint button/content
+                overflow: 'hidden',
               }}>
-                {!showHint && (
+                {!showHint ? (
                   <Button
                     startIcon={<LightbulbIcon />}
                     onClick={handleShowHint}
                     variant="outlined"
                     color="primary"
                     fullWidth
+                    sx={{ height: '48px' }}
                   >
                     Show Facts
                   </Button>
-                )}
-                {showHint && currentCountry && (
-                  <Card sx={{ p: 2, bgcolor: 'background.paper' }}>
-                    <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+                ) : (
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      overflow: 'auto',
+                      bgcolor: 'background.paper',
+                      '&::-webkit-scrollbar': {
+                        width: '8px',
+                      },
+                      '&::-webkit-scrollbar-track': {
+                        background: '#f1f1f1',
+                        borderRadius: '4px',
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        background: '#888',
+                        borderRadius: '4px',
+                        '&:hover': {
+                          background: '#555',
+                        },
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                       <Typography paragraph sx={{ mb: 1 }}>
                         {currentCountry.hints.fact1}
                       </Typography>
@@ -373,20 +415,20 @@ const FlagTrainer = () => {
                 )}
               </Box>
 
+              {/* Flag Container with fixed height */}
               <Box 
                 sx={{ 
                   width: '100%',
                   bgcolor: 'background.paper',
-                  p: { xs: 2, md: 4 },
+                  p: { xs: 2, md: 3 },
                   borderRadius: 2,
-                  textAlign: 'center',
                   border: '1px solid',
                   borderColor: 'divider',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  minHeight: '300px', // Fixed minimum height for flag container
-                  maxHeight: '300px', // Fixed maximum height for flag container
+                  height: { xs: '200px', sm: '250px', md: '300px' },
+                  flexShrink: 0,
                 }}
               >
                 <img
@@ -398,7 +440,7 @@ const FlagTrainer = () => {
                   }}
                   style={{
                     maxWidth: '100%',
-                    height: '100%',
+                    maxHeight: '100%',
                     objectFit: 'contain',
                     borderRadius: '8px',
                     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
@@ -406,11 +448,13 @@ const FlagTrainer = () => {
                 />
               </Box>
 
+              {/* Encouragement Message with fixed height */}
               <Box sx={{ 
-                minHeight: '48px', // Fixed height for encouragement message
+                height: '48px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                flexShrink: 0,
               }}>
                 {encouragement && (
                   <Typography 
@@ -439,7 +483,7 @@ const FlagTrainer = () => {
           </Card>
         </Grid>
 
-        {/* Buttons Grid */}
+        {/* Buttons Grid with fixed heights */}
         <Grid item xs={12} md={8}>
           <Grid 
             container 
@@ -455,7 +499,7 @@ const FlagTrainer = () => {
                 pr: '16px !important',
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
                 maxWidth: { md: '250px' },
-                height: '64px', // Increased height for longer names
+                height: '64px',
               }
             }}
           >
@@ -480,10 +524,16 @@ const FlagTrainer = () => {
                   }}
                   disabled={isTransitioning}
                   sx={{
-                    py: 2,
                     height: '100%',
-                    whiteSpace: 'normal',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
                     lineHeight: 1.2,
+                    padding: '8px 16px',
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
                     bgcolor: wrongAnswer === country.name 
                       ? 'error.main' 
                       : (showCorrect && country.name === currentCountry?.name)
@@ -498,13 +548,8 @@ const FlagTrainer = () => {
                         : (showCorrect && country.name === currentCountry?.name)
                           ? 'success.main'
                           : 'background.paper',
-                      '@media (hover: none)': {
-                        bgcolor: wrongAnswer === country.name 
-                          ? 'error.main' 
-                          : (showCorrect && country.name === currentCountry?.name)
-                            ? 'success.main'
-                            : 'background.paper'
-                      }
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
                     },
                     '&:active': {
                       bgcolor: wrongAnswer === country.name 
@@ -513,14 +558,15 @@ const FlagTrainer = () => {
                           ? 'success.main'
                           : 'primary.main',
                       color: 'white',
+                      transform: 'translateY(1px)',
                     },
-                    transition: 'all 0.3s ease-in-out',
+                    transition: 'all 0.2s ease-in-out',
                     transform: wrongAnswer === country.name || (showCorrect && country.name === currentCountry?.name)
                       ? 'scale(1.05)'
                       : 'scale(1)',
                     boxShadow: wrongAnswer === country.name || (showCorrect && country.name === currentCountry?.name)
                       ? '0 4px 20px rgba(0, 0, 0, 0.2)'
-                      : 'none',
+                      : '0 2px 4px rgba(0, 0, 0, 0.1)',
                     border: wrongAnswer === country.name
                       ? '2px solid #d32f2f'
                       : (showCorrect && country.name === currentCountry?.name)
@@ -531,15 +577,6 @@ const FlagTrainer = () => {
                     userSelect: 'none',
                     '-webkit-user-select': 'none',
                     '-webkit-touch-callout': 'none',
-                    '@media (hover: none)': {
-                      '&:hover': {
-                        bgcolor: wrongAnswer === country.name 
-                          ? 'error.main' 
-                          : (showCorrect && country.name === currentCountry?.name)
-                            ? 'success.main'
-                            : 'background.paper'
-                      }
-                    }
                   }}
                 >
                   {country.name}
