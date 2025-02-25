@@ -73,7 +73,7 @@ const Home = () => {
               maxWidth: '100%',
             }}
           >
-            Welcome to GeoFelber
+            Welcome to GeoFelber!
           </Typography>
           <Typography 
             variant="h5" 
