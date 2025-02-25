@@ -186,7 +186,11 @@ const LanguageTrainer = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 4,
+        gap: { xs: 1, md: 2 },
+        minHeight: '100vh',
+        py: { xs: 2, md: 3 },
+        px: { xs: 2, md: 0 },
+        position: 'relative',
       }}
     >
       {/* Header Section */}
@@ -194,18 +198,24 @@ const LanguageTrainer = () => {
         sx={{ 
           width: '100%',
           textAlign: 'center',
-          mb: 2,
+          height: { xs: '80px', md: '100px' },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          position: 'relative',
+          mb: { xs: 0.5, md: 1 },
         }}
       >
         <Typography 
           variant="h4" 
           component="h1" 
-          gutterBottom
           sx={{ 
             fontWeight: 700,
             background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            mb: 1,
+            fontSize: { xs: '1.75rem', md: '2.125rem' },
           }}
         >
           Language Trainer

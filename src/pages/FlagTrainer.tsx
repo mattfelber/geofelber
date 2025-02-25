@@ -223,24 +223,24 @@ const FlagTrainer = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 3,
+        gap: { xs: 1, md: 2 },
         minHeight: '100vh',
-        py: { xs: 2, md: 4 },
+        py: { xs: 2, md: 3 },
         px: { xs: 2, md: 0 },
         position: 'relative',
       }}
     >
-      {/* Header Section with fixed height */}
+      {/* Header Section with reduced height and margin */}
       <Box 
         sx={{ 
           width: '100%',
           textAlign: 'center',
-          height: { xs: '100px', md: '120px' },
+          height: { xs: '80px', md: '100px' },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           position: 'relative',
-          mb: { xs: 1, md: 2 },
+          mb: { xs: 0.5, md: 1 },
         }}
       >
         <Typography 
@@ -251,7 +251,8 @@ const FlagTrainer = () => {
             background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            mb: 2,
+            mb: 1,
+            fontSize: { xs: '1.75rem', md: '2.125rem' },
           }}
         >
           Flag Trainer
