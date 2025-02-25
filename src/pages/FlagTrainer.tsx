@@ -197,6 +197,8 @@ const FlagTrainer = () => {
         flexDirection: 'column',
         alignItems: 'center',
         gap: 4,
+        minHeight: '100vh', // Ensure minimum full viewport height
+        py: 4, // Consistent padding
       }}
     >
       {/* Header Section */}
@@ -205,6 +207,10 @@ const FlagTrainer = () => {
           width: '100%',
           textAlign: 'center',
           mb: 2,
+          height: '120px', // Fixed height for header
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
         }}
       >
         <Typography 
@@ -266,6 +272,7 @@ const FlagTrainer = () => {
         sx={{ 
           width: '100%',
           justifyContent: 'center',
+          flex: 1, // Take remaining space
         }}
       >
         {/* Flag Card */}
@@ -275,6 +282,7 @@ const FlagTrainer = () => {
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
+              minHeight: '500px', // Minimum height for flag card
             }}
           >
             <CardContent 
@@ -287,7 +295,11 @@ const FlagTrainer = () => {
                 p: { xs: 2, md: 4 },
               }}
             >
-              <Box sx={{ width: '100%', mb: 2 }}>
+              <Box sx={{ 
+                width: '100%', 
+                mb: 2,
+                minHeight: '48px', // Fixed height for hint button/content
+              }}>
                 {!showHint && (
                   <Button
                     startIcon={<LightbulbIcon />}
@@ -328,6 +340,8 @@ const FlagTrainer = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  minHeight: '300px', // Fixed minimum height for flag container
+                  maxHeight: '300px', // Fixed maximum height for flag container
                 }}
               >
                 <img
@@ -335,44 +349,47 @@ const FlagTrainer = () => {
                   alt={`Flag of ${currentCountry.name}`}
                   onError={(e) => {
                     console.error(`Failed to load flag for ${currentCountry.name}`);
-                    // Fallback to flagcdn.com if local file fails
                     e.currentTarget.src = `https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`;
                   }}
                   style={{
-                    width: '100%',
-                    maxWidth: '500px',
-                    height: 'auto',
+                    maxWidth: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
                     borderRadius: '8px',
                     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                    transition: 'transform 0.2s ease-in-out',
-                    cursor: 'pointer',
                   }}
                 />
               </Box>
 
-              {encouragement && (
-                <Typography 
-                  variant="h6" 
-                  color="primary"
-                  sx={{ 
-                    fontWeight: 700,
-                    animation: 'fadeIn 0.5s ease-in',
-                    '@keyframes fadeIn': {
-                      '0%': {
-                        opacity: 0,
-                        transform: 'translateY(-20px)',
+              <Box sx={{ 
+                minHeight: '48px', // Fixed height for encouragement message
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {encouragement && (
+                  <Typography 
+                    variant="h6" 
+                    color="primary"
+                    sx={{ 
+                      fontWeight: 700,
+                      animation: 'fadeIn 0.5s ease-in',
+                      '@keyframes fadeIn': {
+                        '0%': {
+                          opacity: 0,
+                          transform: 'translateY(-20px)',
+                        },
+                        '100%': {
+                          opacity: 1,
+                          transform: 'translateY(0)',
+                        },
                       },
-                      '100%': {
-                        opacity: 1,
-                        transform: 'translateY(0)',
-                      },
-                    },
-                    mt: 2
-                  }}
-                >
-                  {encouragement}
-                </Typography>
-              )}
+                    }}
+                  >
+                    {encouragement}
+                  </Typography>
+                )}
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -392,7 +409,8 @@ const FlagTrainer = () => {
                 pl: '16px !important',
                 pr: '16px !important',
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
-                maxWidth: { md: '250px' }
+                maxWidth: { md: '250px' },
+                height: '48px', // Fixed height for option buttons
               }
             }}
           >
