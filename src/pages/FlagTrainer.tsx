@@ -32,7 +32,8 @@ const getEncouragement = () => {
 const FlagTrainer = () => {
   const [currentCountry, setCurrentCountry] = useState<Country | null>(null);
   const [showHint, setShowHint] = useState(false);
-  const [streak, setStreak] = useState(0);
+  const [streak, setStreak] = useState(0);  
+  const [bestStreak, setBestStreak] = useState(0);  
   const [encouragement, setEncouragement] = useState('');
   const [options, setOptions] = useState<Country[]>([]);
   const [history, setHistory] = useState<Country[]>([]);
@@ -40,7 +41,28 @@ const FlagTrainer = () => {
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [seenFlags, setSeenFlags] = useState<Set<string>>(new Set());
+
+  // Load saved streaks from localStorage
+  useEffect(() => {
+    const savedStreak = localStorage.getItem('flagStreak');
+    const savedBestStreak = localStorage.getItem('flagBestStreak');
+    
+    if (savedStreak) {
+      setStreak(parseInt(savedStreak, 10));
+    }
+    if (savedBestStreak) {
+      setBestStreak(parseInt(savedBestStreak, 10));
+    }
+  }, []);
+
+  // Save streaks to localStorage
+  useEffect(() => {
+    localStorage.setItem('flagStreak', streak.toString());
+    if (streak > bestStreak) {
+      setBestStreak(streak);
+      localStorage.setItem('flagBestStreak', streak.toString());
+    }
+  }, [streak, bestStreak]);
 
   useEffect(() => {
     selectNewCountry();
@@ -50,6 +72,19 @@ const FlagTrainer = () => {
     // Scroll to bottom whenever options change
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }, [options]);
+
+  useEffect(() => {
+    console.log('Debug - streak changed to:', streak);
+  }, [streak]);
+
+  const getStreakMessage = (streak: number): string => {
+    if (streak >= 25) return 'Legendary! 🏆';
+    if (streak >= 20) return 'Unstoppable! 🌟';
+    if (streak >= 15) return 'Amazing! ⭐';
+    if (streak >= 10) return 'Fantastic! 🎯';
+    if (streak >= 5) return 'Great job! 🔥';
+    return getEncouragement();
+  };
 
   const selectNewCountry = (addToHistory = true) => {
     let newCountry;
@@ -74,7 +109,6 @@ const FlagTrainer = () => {
     setShowCorrect(false);
 
     if (addToHistory) {
-      setSeenFlags(prev => new Set(prev).add(newCountry.code));
       setHistory(prev => {
         const newHistory = [...prev.slice(0, historyIndex + 1), newCountry];
         setHistoryIndex(newHistory.length - 1);
@@ -86,20 +120,13 @@ const FlagTrainer = () => {
   const handleCorrectGuess = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    setShowCorrect(true);  // Set this immediately
+    setShowCorrect(true);
     
-    // Only increment streak if:
-    // 1. We're at the latest point in history (not reviewing)
-    // 2. This is a new flag we haven't seen before
-    const isReviewing = historyIndex < history.length - 1;
-    if (!isReviewing && currentCountry && !seenFlags.has(currentCountry.code)) {
-      setStreak(prev => prev + 1);
-    }
+    // Increment streak on every correct answer
+    const newStreak = streak + 1;
+    setStreak(newStreak);
+    setEncouragement(getStreakMessage(newStreak));
     
-    // Always show encouragement on correct answer
-    setEncouragement(getEncouragement());
-    
-    // Wait a moment to show the correct answer highlight
     setTimeout(() => {
       selectNewCountry();
       setIsTransitioning(false);
@@ -109,11 +136,11 @@ const FlagTrainer = () => {
   const handleIncorrectGuess = (selectedName: string) => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-    setStreak(0);
+    setStreak(0); // Reset streak on wrong answer
     setEncouragement('');
     setWrongAnswer(selectedName);
     setShowCorrect(true);
-    // Reset after 2 seconds
+    
     setTimeout(() => {
       setWrongAnswer(null);
       setShowCorrect(false);
@@ -246,9 +273,27 @@ const FlagTrainer = () => {
               px: 2,
               display: 'flex',
               alignItems: 'center',
+              gap: 1,
             }}
           >
-            Streak: {streak}
+            <Box component="span">Streak: {streak}</Box>
+            {bestStreak > 0 && (
+              <Box 
+                component="span" 
+                sx={{ 
+                  fontSize: '0.8em',
+                  opacity: 0.8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  '&::before': {
+                    content: '"•"',
+                    mx: 1,
+                  }
+                }}
+              >
+                Best: {bestStreak}
+              </Box>
+            )}
           </Typography>
           <Button
             variant="outlined"
