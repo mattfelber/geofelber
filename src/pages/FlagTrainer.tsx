@@ -410,7 +410,7 @@ const FlagTrainer = () => {
                 pr: '16px !important',
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
                 maxWidth: { md: '250px' },
-                height: '48px', // Fixed height for option buttons
+                height: '64px', // Increased height for longer names
               }
             }}
           >
@@ -436,6 +436,9 @@ const FlagTrainer = () => {
                   disabled={isTransitioning}
                   sx={{
                     py: 2,
+                    height: '100%',
+                    whiteSpace: 'normal',
+                    lineHeight: 1.2,
                     bgcolor: wrongAnswer === country.name 
                       ? 'error.main' 
                       : (showCorrect && country.name === currentCountry?.name)
