@@ -187,10 +187,11 @@ const LanguageTrainer = () => {
         flexDirection: 'column',
         alignItems: 'center',
         gap: { xs: 1, md: 2 },
-        minHeight: '100vh',
-        py: { xs: 2, md: 3 },
+        py: { xs: 1, md: 2 },
         px: { xs: 2, md: 0 },
         position: 'relative',
+        boxSizing: 'border-box',
+        overflow: 'hidden'
       }}
     >
       {/* Header Section */}
@@ -220,7 +221,14 @@ const LanguageTrainer = () => {
         >
           Language Trainer
         </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          gap: { xs: 1, sm: 2 }, 
+          mb: { xs: 1, sm: 2 },
+          width: '100%',
+          px: { xs: 0.5, sm: 2 },
+        }}>
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
@@ -228,18 +236,33 @@ const LanguageTrainer = () => {
             disabled={historyIndex <= 0}
             size="small"
             sx={{
-              minWidth: '100px',
+              minWidth: { xs: '60px', sm: '100px' },
+              height: '36px',
+              flexShrink: 0,
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              px: { xs: 1, sm: 2 },
+              '& .MuiButton-startIcon': {
+                mr: { xs: 0, sm: 1 },
+              },
+              '& .MuiButton-startIcon > *:nth-of-type(1)': {
+                fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              },
             }}
           >
-            Back
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>Back</Box>
           </Button>
           <Typography 
             variant="h6" 
             color="text.secondary"
             sx={{ 
-              px: 2,
+              px: { xs: 1, sm: 2 },
               display: 'flex',
               alignItems: 'center',
+              gap: { xs: 0.5, sm: 1 },
+              minWidth: { xs: '120px', sm: '150px' },
+              justifyContent: 'center',
+              flexShrink: 0,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             Streak: {streak}
@@ -250,10 +273,20 @@ const LanguageTrainer = () => {
             onClick={goForward}
             size="small"
             sx={{
-              minWidth: '100px',
+              minWidth: { xs: '60px', sm: '100px' },
+              height: '36px',
+              flexShrink: 0,
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              px: { xs: 1, sm: 2 },
+              '& .MuiButton-endIcon': {
+                ml: { xs: 0, sm: 1 },
+              },
+              '& .MuiButton-endIcon > *:nth-of-type(1)': {
+                fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              },
             }}
           >
-            {historyIndex < history.length - 1 ? 'Forward' : 'Skip'}
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>{historyIndex < history.length - 1 ? 'Forward' : 'Skip'}</Box>
           </Button>
         </Box>
       </Box>
@@ -261,10 +294,11 @@ const LanguageTrainer = () => {
       {/* Main Content */}
       <Grid 
         container 
-        spacing={{ xs: 2, md: 4 }}
+        spacing={{ xs: 1, md: 2 }}
         sx={{ 
           width: '100%',
           justifyContent: 'center',
+          mb: { xs: 1, md: 2 },
         }}
       >
         {/* Sample Text Card */}
@@ -407,13 +441,34 @@ const LanguageTrainer = () => {
             container 
             spacing={2} 
             sx={{ 
-              justifyContent: 'center',
               width: '100%',
-              px: { xs: 2, md: 4 }
+              mx: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              mt: { xs: 1, sm: 2 },
+              px: { xs: 1, sm: 2 },
+              boxSizing: 'border-box',
+              '& .MuiGrid-item': {
+                pl: { xs: '8px !important', sm: '16px !important' },
+                pr: { xs: '8px !important', sm: '16px !important' },
+                width: { xs: '100%', sm: '50%', md: '33.333%' },
+                maxWidth: { xs: '100%', md: '250px' },
+                height: { xs: '56px', sm: '64px' },
+                mb: { xs: 1, sm: 2 },
+                boxSizing: 'border-box',
+              }
             }}
           >
             {options.map((language) => (
-              <Grid item xs={12} sm={6} md={4} key={language.name}>
+              <Grid 
+                item 
+                key={language.name}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
                 <Button
                   variant="contained"
                   fullWidth
@@ -426,7 +481,17 @@ const LanguageTrainer = () => {
                   }}
                   disabled={isTransitioning}
                   sx={{
-                    py: 2,
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    lineHeight: 1.2,
+                    padding: { xs: '6px 12px', sm: '8px 16px' },
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    maxWidth: '100%',
                     bgcolor: wrongAnswer === language.name 
                       ? 'error.main' 
                       : (showCorrect && language.name === currentLanguage?.name)

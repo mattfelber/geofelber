@@ -225,10 +225,11 @@ const FlagTrainer = () => {
         flexDirection: 'column',
         alignItems: 'center',
         gap: 1,
-        minHeight: '100vh',
         py: 1,
-        px: 1,
+        px: { xs: 2, sm: 3 },
         position: 'relative',
+        boxSizing: 'border-box',
+        overflow: 'hidden'
       }}
     >
       {/* Header Section with reduced height and margin */}
@@ -242,6 +243,7 @@ const FlagTrainer = () => {
           justifyContent: 'center',
           position: 'relative',
           mb: 1,
+          px: { xs: 1, sm: 2 },
         }}
       >
         <Typography 
@@ -263,8 +265,10 @@ const FlagTrainer = () => {
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
-            gap: 2,
+            gap: { xs: 1, sm: 2 },
             flexWrap: 'nowrap',
+            width: '100%',
+            px: { xs: 0.5, sm: 2 },
           }}
         >
           <Button
@@ -274,24 +278,33 @@ const FlagTrainer = () => {
             disabled={historyIndex <= 0 || isTransitioning}
             size="small"
             sx={{
-              minWidth: { xs: '80px', sm: '100px' },
+              minWidth: { xs: '60px', sm: '100px' },
               height: '36px',
               flexShrink: 0,
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              px: { xs: 1, sm: 2 },
+              '& .MuiButton-startIcon': {
+                mr: { xs: 0, sm: 1 },
+              },
+              '& .MuiButton-startIcon > *:nth-of-type(1)': {
+                fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              },
             }}
           >
-            Back
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>Back</Box>
           </Button>
           <Typography 
             variant="h6" 
             color="text.secondary"
             sx={{ 
-              px: 2,
+              px: { xs: 1, sm: 2 },
               display: 'flex',
               alignItems: 'center',
-              gap: 1,
-              minWidth: '150px',
+              gap: { xs: 0.5, sm: 1 },
+              minWidth: { xs: '120px', sm: '150px' },
               justifyContent: 'center',
               flexShrink: 0,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
             <Box component="span">Streak: {streak}</Box>
@@ -299,13 +312,13 @@ const FlagTrainer = () => {
               <Box 
                 component="span" 
                 sx={{ 
-                  fontSize: '0.8em',
+                  fontSize: { xs: '0.75rem', sm: '0.8em' },
                   opacity: 0.8,
                   display: 'flex',
                   alignItems: 'center',
                   '&::before': {
                     content: '"•"',
-                    mx: 1,
+                    mx: { xs: 0.5, sm: 1 },
                   }
                 }}
               >
@@ -320,12 +333,20 @@ const FlagTrainer = () => {
             disabled={isTransitioning}
             size="small"
             sx={{
-              minWidth: { xs: '80px', sm: '100px' },
+              minWidth: { xs: '60px', sm: '100px' },
               height: '36px',
               flexShrink: 0,
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              px: { xs: 1, sm: 2 },
+              '& .MuiButton-endIcon': {
+                ml: { xs: 0, sm: 1 },
+              },
+              '& .MuiButton-endIcon > *:nth-of-type(1)': {
+                fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              },
             }}
           >
-            Skip
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>Skip</Box>
           </Button>
         </Box>
       </Box>
@@ -379,8 +400,8 @@ const FlagTrainer = () => {
               {/* Facts Section */}
               <Box sx={{ 
                 position: 'absolute',
-                top: 8,
-                right: 8,
+                top: { xs: 2, sm: 8 },
+                right: { xs: 2, sm: 8 },
                 zIndex: 2
               }}>
                 <Button
@@ -450,8 +471,9 @@ const FlagTrainer = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  mb: 2,
-                  height: { xs: '160px', sm: '200px', md: '240px' }, // Fixed container height
+                  mb: { xs: 1, sm: 2 },
+                  mt: { xs: 4, sm: 0 },  
+                  height: { xs: '140px', sm: '200px', md: '240px' }, 
                 }}
               >
                 <Box
@@ -463,9 +485,9 @@ const FlagTrainer = () => {
                     e.currentTarget.src = `https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`;
                   }}
                   sx={{
-                    height: '100%', // Fill container height
-                    width: 'auto', // Maintain aspect ratio
-                    maxWidth: { xs: '240px', sm: '300px', md: '360px' },
+                    height: '100%',
+                    width: 'auto',
+                    maxWidth: { xs: '200px', sm: '300px', md: '360px' }, 
                     objectFit: 'contain',
                     borderRadius: '8px',
                     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
@@ -520,12 +542,17 @@ const FlagTrainer = () => {
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
+              mt: { xs: 1, sm: 2 }, 
+              px: { xs: 1, sm: 2 },
+              boxSizing: 'border-box',
               '& .MuiGrid-item': {
-                pl: '16px !important',
-                pr: '16px !important',
+                pl: { xs: '8px !important', sm: '16px !important' },
+                pr: { xs: '8px !important', sm: '16px !important' },
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
-                maxWidth: { md: '250px' },
-                height: '64px',
+                maxWidth: { xs: '100%', md: '250px' },
+                height: { xs: '56px', sm: '64px' }, 
+                mb: { xs: 1, sm: 2 }, 
+                boxSizing: 'border-box',
               }
             }}
           >
@@ -557,9 +584,10 @@ const FlagTrainer = () => {
                     textAlign: 'center',
                     fontSize: { xs: '0.875rem', sm: '1rem' },
                     lineHeight: 1.2,
-                    padding: '8px 16px',
+                    padding: { xs: '6px 12px', sm: '8px 16px' },
                     whiteSpace: 'normal',
                     wordBreak: 'break-word',
+                    maxWidth: '100%',
                     bgcolor: wrongAnswer === country.name 
                       ? 'error.main' 
                       : (showCorrect && country.name === currentCountry?.name)
@@ -599,7 +627,8 @@ const FlagTrainer = () => {
                         ? '2px solid #2e7d32'
                         : '2px solid transparent',
                     touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
+                    WebkitUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
                     userSelect: 'none',
                     '-webkit-user-select': 'none',
                     '-webkit-touch-callout': 'none',
