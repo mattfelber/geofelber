@@ -223,10 +223,10 @@ const FlagTrainer = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: { xs: 1, md: 2 },
+        gap: 1,
         minHeight: '100vh',
-        py: { xs: 2, md: 3 },
-        px: { xs: 2, md: 0 },
+        py: 1,
+        px: 1,
         position: 'relative',
       }}
     >
@@ -240,7 +240,7 @@ const FlagTrainer = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           position: 'relative',
-          mb: { xs: 0.5, md: 1 },
+          mb: 1,
         }}
       >
         <Typography 
@@ -343,30 +343,43 @@ const FlagTrainer = () => {
         <Grid item xs={12} md={8}>
           <Card 
             sx={{ 
-              height: '100%',
+              height: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              minHeight: { xs: '450px', md: '500px' },
-              maxHeight: { xs: '600px', md: '700px' },
+              minHeight: { xs: '260px', md: '300px' },
+              maxHeight: { xs: '340px', md: '380px' },
+              '& .MuiCardContent-root': {
+                p: 1,
+                '&:last-child': {
+                  pb: 1
+                }
+              }
             }}
           >
             <CardContent 
               sx={{ 
-                flexGrow: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: 2,
-                p: { xs: 2, md: 3 },
-                height: '100%',
+                gap: 1,
+                p: 1,
+                minHeight: 0,
+                '&.MuiCardContent-root': {
+                  p: 1,
+                  '&:last-child': {
+                    pb: 1
+                  }
+                }
               }}
             >
               {/* Facts Section with fixed height */}
               <Box sx={{ 
                 width: '100%',
-                height: { xs: '120px', md: '150px' },
-                mb: 2,
-                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                height: { xs: '80px', md: '100px' },
+                mb: -2
               }}>
                 {!showHint ? (
                   <Button
@@ -375,7 +388,10 @@ const FlagTrainer = () => {
                     variant="outlined"
                     color="primary"
                     fullWidth
-                    sx={{ height: '48px' }}
+                    sx={{
+                      mb: -2,
+                      height: '36px'
+                    }}
                   >
                     Show Facts
                   </Button>
@@ -416,20 +432,23 @@ const FlagTrainer = () => {
                 )}
               </Box>
 
-              {/* Flag Container with fixed height */}
-              <Box 
-                sx={{ 
+              {/* Flag display section */}
+              <Box
+                sx={{
                   width: '100%',
-                  bgcolor: 'background.paper',
-                  p: { xs: 2, md: 3 },
-                  borderRadius: 2,
-                  border: '1px solid',
-                  borderColor: 'divider',
+                  maxWidth: 600,
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  height: { xs: '200px', sm: '250px', md: '300px' },
-                  flexShrink: 0,
+                  transform: 'translateY(-24px)',
+                  mb: -2,
+                  '& img': {
+                    width: { xs: '240px', sm: '300px', md: '360px' },
+                    height: { xs: '160px', sm: '200px', md: '240px' },
+                    objectFit: 'contain',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                  },
                 }}
               >
                 <img
@@ -439,23 +458,17 @@ const FlagTrainer = () => {
                     console.error(`Failed to load flag for ${currentCountry.name}`);
                     e.currentTarget.src = `https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`;
                   }}
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    objectFit: 'contain',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  }}
                 />
               </Box>
 
               {/* Encouragement Message with fixed height */}
               <Box sx={{ 
-                height: '48px',
+                height: '36px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
+                mt: 1
               }}>
                 {encouragement && (
                   <Typography 
