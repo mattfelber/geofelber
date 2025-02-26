@@ -298,7 +298,7 @@ const LanguageTrainer = () => {
         sx={{ 
           width: '100%',
           justifyContent: 'center',
-          mb: { xs: 1, md: 2 },
+          mb: { xs: 1, md: 1 },
         }}
       >
         {/* Sample Text Card */}
@@ -316,15 +316,15 @@ const LanguageTrainer = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: { xs: 2, md: 3 },
-                p: { xs: 2, md: 4 },
+                gap: { xs: 2, md: 2 },
+                p: { xs: 2, md: 2 },
               }}
             >
               <Box 
                 sx={{ 
                   width: '100%',
                   bgcolor: 'background.paper',
-                  p: { xs: 2, md: 4 },
+                  p: { xs: 2, md: 2 },
                   borderRadius: 2,
                   textAlign: 'center',
                   border: '1px solid',
@@ -334,8 +334,8 @@ const LanguageTrainer = () => {
                 <Typography 
                   variant="h5" 
                   sx={{ 
-                    fontSize: { xs: '1.25rem', md: '2rem' },
-                    lineHeight: 1.8,
+                    fontSize: { xs: '1.25rem', md: '1.75rem' },
+                    lineHeight: 1.6,
                     letterSpacing: '0.02em',
                   }}
                 >
@@ -370,7 +370,7 @@ const LanguageTrainer = () => {
               <Collapse in={showHint} sx={{ width: '100%' }}>
                 <Paper 
                   sx={{ 
-                    p: 2,
+                    p: { xs: 2, md: 1.5 },
                     bgcolor: (theme) => alpha(theme.palette.warning.main, 0.1),
                   }}
                 >
@@ -446,7 +446,7 @@ const LanguageTrainer = () => {
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              mt: { xs: 1, sm: 2 },
+              mt: { xs: 1, sm: 2, md: 1 },
               px: { xs: 1, sm: 2 },
               boxSizing: 'border-box',
               '& .MuiGrid-item': {
@@ -454,8 +454,8 @@ const LanguageTrainer = () => {
                 pr: { xs: '8px !important', sm: '16px !important' },
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
                 maxWidth: { xs: '100%', md: '250px' },
-                height: { xs: '56px', sm: '64px' },
-                mb: { xs: 1, sm: 2 },
+                height: { xs: '56px', sm: '64px', md: '52px' },
+                mb: { xs: 1, sm: 2, md: 1 },
                 boxSizing: 'border-box',
               }
             }}

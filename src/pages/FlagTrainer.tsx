@@ -359,6 +359,11 @@ const FlagTrainer = () => {
           width: '100%',
           justifyContent: 'center',
           flex: 1,
+          '& > .MuiGrid-item': {
+            md: {
+              mb: 0
+            }
+          }
         }}
       >
         {/* Flag Card */}
@@ -368,8 +373,8 @@ const FlagTrainer = () => {
               height: 'auto',
               display: 'flex',
               flexDirection: 'column',
-              minHeight: { xs: '260px', md: '300px' },
-              maxHeight: { xs: '340px', md: '380px' },
+              minHeight: { xs: '260px', md: '240px' },
+              maxHeight: { xs: '340px', md: '300px' },
               '& .MuiCardContent-root': {
                 p: 1,
                 '&:last-child': {
@@ -385,12 +390,12 @@ const FlagTrainer = () => {
                 alignItems: 'center',
                 gap: 1,
                 p: 1,
-                pt: 5, 
+                pt: { xs: 5, md: 2 },
                 minHeight: 0,
                 position: 'relative', 
                 '&.MuiCardContent-root': {
                   p: 1,
-                  pt: 5, 
+                  pt: { xs: 5, md: 2 },
                   '&:last-child': {
                     pb: 1
                   }
@@ -471,9 +476,9 @@ const FlagTrainer = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  mb: { xs: 1, sm: 2 },
-                  mt: { xs: 4, sm: 0 },  
-                  height: { xs: '140px', sm: '200px', md: '240px' }, 
+                  mb: { xs: 1, sm: 2, md: 1 },
+                  mt: { xs: 4, sm: 0 },
+                  height: { xs: '140px', sm: '200px', md: '180px' },
                 }}
               >
                 <Box
@@ -532,7 +537,7 @@ const FlagTrainer = () => {
         </Grid>
 
         {/* Buttons Grid with fixed heights */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={8} sx={{ md: { mt: 0 } }}>
           <Grid 
             container 
             spacing={2} 
@@ -542,7 +547,7 @@ const FlagTrainer = () => {
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              mt: { xs: 1, sm: 2 }, 
+              mt: { xs: 1, sm: 2, md: 1 },
               px: { xs: 1, sm: 2 },
               boxSizing: 'border-box',
               '& .MuiGrid-item': {
@@ -550,8 +555,8 @@ const FlagTrainer = () => {
                 pr: { xs: '8px !important', sm: '16px !important' },
                 width: { xs: '100%', sm: '50%', md: '33.333%' },
                 maxWidth: { xs: '100%', md: '250px' },
-                height: { xs: '56px', sm: '64px' }, 
-                mb: { xs: 1, sm: 2 }, 
+                height: { xs: '56px', sm: '64px', md: '48px' },
+                mb: { xs: 1, sm: 2, md: 0.5 },
                 boxSizing: 'border-box',
               }
             }}
