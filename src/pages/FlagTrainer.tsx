@@ -5,7 +5,8 @@ import {
   Card, 
   CardContent, 
   Grid, 
-  Typography 
+  Typography,
+  Fade,
 } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -209,7 +210,7 @@ const FlagTrainer = () => {
   };
 
   const handleShowHint = () => {
-    setShowHint(true);
+    setShowHint(prev => !prev); // Toggle the hint visibility
   };
 
   if (!currentCountry) return null;
@@ -363,44 +364,54 @@ const FlagTrainer = () => {
                 alignItems: 'center',
                 gap: 1,
                 p: 1,
+                pt: 5, 
                 minHeight: 0,
+                position: 'relative', 
                 '&.MuiCardContent-root': {
                   p: 1,
+                  pt: 5, 
                   '&:last-child': {
                     pb: 1
                   }
                 }
               }}
             >
-              {/* Facts Section with fixed height */}
+              {/* Facts Section */}
               <Box sx={{ 
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                height: { xs: '80px', md: '100px' },
-                mb: -2
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                zIndex: 2
               }}>
-                {!showHint ? (
-                  <Button
-                    startIcon={<LightbulbIcon />}
-                    onClick={handleShowHint}
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      mb: -2,
-                      height: '36px'
-                    }}
-                  >
-                    Show Facts
-                  </Button>
-                ) : (
+                <Button
+                  startIcon={<LightbulbIcon />}
+                  onClick={handleShowHint}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    minWidth: 'auto',
+                    padding: '4px 8px',
+                    backgroundColor: 'background.paper',
+                    '&:hover': {
+                      backgroundColor: 'background.paper',
+                    }
+                  }}
+                >
+                  Facts
+                </Button>
+                <Fade in={showHint}>
                   <Card 
                     sx={{ 
-                      height: '100%',
+                      position: 'absolute',
+                      top: '100%',
+                      right: 0,
+                      mt: 1,
+                      width: 280,
+                      maxHeight: 300,
                       overflow: 'auto',
                       bgcolor: 'background.paper',
+                      boxShadow: 3,
+                      zIndex: 3,
                       '&::-webkit-scrollbar': {
                         width: '8px',
                       },
@@ -429,34 +440,35 @@ const FlagTrainer = () => {
                       </Typography>
                     </CardContent>
                   </Card>
-                )}
+                </Fade>
               </Box>
 
               {/* Flag display section */}
               <Box
                 sx={{
                   width: '100%',
-                  maxWidth: 600,
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  transform: 'translateY(-24px)',
-                  mb: -2,
-                  '& img': {
-                    width: { xs: '240px', sm: '300px', md: '360px' },
-                    height: { xs: '160px', sm: '200px', md: '240px' },
-                    objectFit: 'contain',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  },
+                  mb: 2,
+                  height: { xs: '160px', sm: '200px', md: '240px' }, // Fixed container height
                 }}
               >
-                <img
-                  src={`./flags/${currentCountry.code.toLowerCase()}.png`}
+                <Box
+                  component="img"
+                  src={`https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`}
                   alt={`Flag of ${currentCountry.name}`}
                   onError={(e) => {
                     console.error(`Failed to load flag for ${currentCountry.name}`);
                     e.currentTarget.src = `https://flagcdn.com/w640/${currentCountry.code.toLowerCase()}.png`;
+                  }}
+                  sx={{
+                    height: '100%', // Fill container height
+                    width: 'auto', // Maintain aspect ratio
+                    maxWidth: { xs: '240px', sm: '300px', md: '360px' },
+                    objectFit: 'contain',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                   }}
                 />
               </Box>
