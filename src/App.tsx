@@ -5,6 +5,11 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import LanguageTrainer from './pages/LanguageTrainer';
 import FlagTrainer from './pages/FlagTrainer';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Profile from './pages/Profile';
+import { AuthProvider } from './contexts/AuthContext';
+import { PrivateRoute } from './components/PrivateRoute';
 
 const theme = createTheme({
   palette: {
@@ -60,50 +65,85 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          minHeight: '100vh',
-          bgcolor: 'background.default',
-          width: '100vw',
-          margin: 0,
-          padding: 0,
-          overflowX: 'hidden'
-        }}>
-          <Navbar />
-          <Box 
-            component="main"
+    <Router>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AuthProvider>
+          <Box
             sx={{
-              flex: 1,
               display: 'flex',
-              justifyContent: 'center',
-              px: { xs: 2, sm: 3, md: 4 },
-              py: { xs: 2, sm: 3, md: 4 },
-              overflow: 'auto',
+              flexDirection: 'column',
+              minHeight: '100vh',
+              bgcolor: 'background.default',
+              width: '100vw',
+              margin: 0,
+              padding: 0,
+              overflowX: 'hidden'
             }}
           >
-            <Container 
-              maxWidth={false}
-              sx={{ 
+            <Navbar />
+            <Box 
+              component="main"
+              sx={{
+                flex: 1,
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                mx: 'auto',
+                justifyContent: 'center',
+                px: { xs: 2, sm: 3, md: 4 },
+                py: { xs: 2, sm: 3, md: 4 },
+                overflow: 'auto',
               }}
             >
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/language-trainer" element={<LanguageTrainer />} />
-                <Route path="/flag-trainer" element={<FlagTrainer />} />
-              </Routes>
-            </Container>
+              <Container 
+                maxWidth={false}
+                sx={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  mx: 'auto',
+                }}
+              >
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route
+                    path="/"
+                    element={
+                      <PrivateRoute>
+                        <Home />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/language-trainer"
+                    element={
+                      <PrivateRoute>
+                        <LanguageTrainer />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/flag-trainer"
+                    element={
+                      <PrivateRoute>
+                        <FlagTrainer />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <PrivateRoute>
+                        <Profile />
+                      </PrivateRoute>
+                    }
+                  />
+                </Routes>
+              </Container>
+            </Box>
           </Box>
-        </Box>
-      </Router>
-    </ThemeProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 

@@ -1,24 +1,16 @@
-import { useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  Box, 
-  IconButton, 
-  Menu, 
-  MenuItem,
-  useTheme,
-  useMediaQuery
-} from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-import PublicIcon from '@mui/icons-material/Public';
+import { AppBar, Toolbar, Button, Box, IconButton, useTheme, useMediaQuery } from '@mui/material';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useState } from 'react';
+import { Menu, MenuItem } from '@mui/material';
 
 const Navbar = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { user, signOut } = useAuth();
+  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -28,131 +20,107 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const menuItems = [
-    { text: 'Language Trainer', path: '/language-trainer' },
-    { text: 'Flag Trainer', path: '/flag-trainer' },
-  ];
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      handleClose();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const navItems = user ? [
+    { path: '/', label: 'Home' },
+    { path: '/language-trainer', label: 'Language Trainer' },
+    { path: '/flag-trainer', label: 'Flag Trainer' },
+  ] : [];
+
+  if (isMobile) {
+    return (
+      <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
+        <Toolbar>
+          {user && (
+            <>
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                onClick={handleMenu}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {navItems.map((item) => (
+                  <MenuItem
+                    key={item.path}
+                    component={RouterLink}
+                    to={item.path}
+                    onClick={handleClose}
+                    selected={isActive(item.path)}
+                  >
+                    {item.label}
+                  </MenuItem>
+                ))}
+                <MenuItem component={RouterLink} to="/profile">Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </>
+          )}
+          {!user && (
+            <Button
+              component={RouterLink}
+              to="/login"
+              color="primary"
+              variant="contained"
+            >
+              Login
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+    );
+  }
 
   return (
-    <AppBar 
-      position="static" 
-      sx={{ 
-        bgcolor: 'background.paper',
-        boxShadow: 1,
-        width: '100%',
-        minWidth: '100%',
-        margin: 0,
-        padding: 0
-      }}
-    >
-      <Toolbar 
-        sx={{ 
-          justifyContent: 'space-between',
-          width: '100%',
-          minWidth: '100%',
-          px: { xs: 2, sm: 3, md: 4 },
-          margin: 0
-        }}
-      >
-        <Box 
-          component={RouterLink} 
-          to="/" 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            textDecoration: 'none', 
-            color: 'inherit' 
-          }}
-        >
-          <PublicIcon 
-            sx={{ 
-              mr: 1.5,
-              fontSize: '28px',
-              color: 'primary.main'
-            }} 
-          />
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontWeight: 700,
-              fontSize: { xs: '1.2rem', sm: '1.4rem' },
-              background: 'linear-gradient(45deg, #58cc02 30%, #ffd900 90%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            GeoFelber
-          </Typography>
+    <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
+      <Toolbar>
+        <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+          {navItems.map((item) => (
+            <Button
+              key={item.path}
+              component={RouterLink}
+              to={item.path}
+              color="primary"
+              variant={isActive(item.path) ? 'contained' : 'text'}
+            >
+              {item.label}
+            </Button>
+          ))}
         </Box>
-
-        {isMobile ? (
+        {user ? (
           <>
-            <IconButton
-              size="large"
-              edge="end"
-              color="inherit"
-              aria-label="menu"
-              onClick={handleMenu}
-              sx={{ color: 'text.primary' }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              {menuItems.map((item) => (
-                <MenuItem 
-                  key={item.path}
-                  onClick={handleClose}
-                  component={RouterLink}
-                  to={item.path}
-                  sx={{ 
-                    py: 1.5,
-                    px: 3,
-                    '&:hover': {
-                      bgcolor: 'primary.main',
-                      color: 'white',
-                    }
-                  }}
-                >
-                  {item.text}
-                </MenuItem>
-              ))}
-            </Menu>
+            <Button color="inherit" component={RouterLink} to="/profile">
+              Profile
+            </Button>
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
           </>
         ) : (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            {menuItems.map((item) => (
-              <Button
-                key={item.path}
-                component={RouterLink}
-                to={item.path}
-                sx={{
-                  color: 'text.primary',
-                  px: 2,
-                  py: 1,
-                  '&:hover': {
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                  }
-                }}
-              >
-                {item.text}
-              </Button>
-            ))}
-          </Box>
+          <Button
+            component={RouterLink}
+            to="/login"
+            color="primary"
+            variant="contained"
+          >
+            Login
+          </Button>
         )}
       </Toolbar>
     </AppBar>

@@ -17,6 +17,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Language, languages } from '../data/languages';
+import { useAuth } from '../contexts/AuthContext';
+import { DatabaseService } from '../lib/database.service';
 
 const getEncouragement = () => {
   const messages = ['Great job! 🎯', 'Perfect! ⭐', 'Excellent! 🏆', 'Amazing! 🌟'];
@@ -24,6 +26,7 @@ const getEncouragement = () => {
 };
 
 const LanguageTrainer = () => {
+  const { user } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -35,19 +38,31 @@ const LanguageTrainer = () => {
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [sessionStart] = useState<Date>(new Date());
+  const [sessionAttempts, setSessionAttempts] = useState(0);
+  const [sessionCorrect, setSessionCorrect] = useState(0);
 
-  // Load saved streaks from localStorage
+  // Load saved streaks from database
   useEffect(() => {
-    const savedStreak = localStorage.getItem('languageStreak');
-    const savedBestStreak = localStorage.getItem('languageBestStreak');
-    
-    if (savedStreak) {
-      setStreak(parseInt(savedStreak, 10));
+    if (user) {
+      DatabaseService.getUserScore(user.id, 'language')
+        .then((score) => {
+          if (score) {
+            setStreak(score.score);
+            setBestStreak(score.best_streak);
+          }
+        })
+        .catch(console.error);
     }
-    if (savedBestStreak) {
-      setBestStreak(parseInt(savedBestStreak, 10));
+  }, [user]);
+
+  // Save streaks to database
+  useEffect(() => {
+    if (user) {
+      DatabaseService.updateUserScore(user.id, 'language', streak, bestStreak)
+        .catch(console.error);
     }
-  }, []);
+  }, [streak, bestStreak, user]);
 
   useEffect(() => {
     selectNewLanguage();
@@ -109,10 +124,7 @@ const LanguageTrainer = () => {
     // Update best streak if needed
     if (newStreak > bestStreak) {
       setBestStreak(newStreak);
-      localStorage.setItem('languageBestStreak', newStreak.toString());
     }
-    localStorage.setItem('languageStreak', newStreak.toString());
-    
     setEncouragement(getEncouragement());
     setShowCorrect(true);
     
@@ -127,7 +139,6 @@ const LanguageTrainer = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setStreak(0);
-    localStorage.setItem('languageStreak', '0');
     setEncouragement('');
     setWrongAnswer(selectedName);
     setShowCorrect(true);
@@ -189,6 +200,53 @@ const LanguageTrainer = () => {
       selectNewLanguage();
     }
   };
+
+  const handleCorrectGuessUpdated = () => {
+    const newStreak = streak + 1;
+    const newBestStreak = Math.max(bestStreak, streak + 1);
+    setStreak(newStreak);
+    setBestStreak(newBestStreak);
+    setEncouragement(getEncouragement());
+    setShowCorrect(true);
+    setSessionCorrect(prev => prev + 1);
+    setSessionAttempts(prev => prev + 1);
+
+    if (user && currentLanguage) {
+      DatabaseService.updateLearningProgress(user.id, 'language', currentLanguage.code, true)
+        .catch(console.error);
+    }
+
+    setTimeout(() => {
+      selectNewLanguage();
+    }, 1500);
+  };
+
+  const handleWrongGuessUpdated = (wrongLanguageName: string) => {
+    setStreak(0);
+    setWrongAnswer(wrongLanguageName);
+    setSessionAttempts(prev => prev + 1);
+
+    if (user && currentLanguage) {
+      DatabaseService.updateLearningProgress(user.id, 'language', currentLanguage.code, false)
+        .catch(console.error);
+    }
+  };
+
+  // Save practice session when component unmounts
+  useEffect(() => {
+    return () => {
+      if (user && sessionAttempts > 0) {
+        const sessionDuration = Math.round((new Date().getTime() - sessionStart.getTime()) / 1000);
+        DatabaseService.createPracticeSession(
+          user.id,
+          'language',
+          sessionAttempts,
+          sessionCorrect,
+          sessionDuration
+        ).catch(console.error);
+      }
+    };
+  }, [user, sessionAttempts, sessionCorrect, sessionStart]);
 
   if (!currentLanguage) return null;
 
@@ -506,9 +564,9 @@ const LanguageTrainer = () => {
                   fullWidth
                   onClick={() => {
                     if (language.name === currentLanguage?.name) {
-                      handleCorrectGuess();
+                      handleCorrectGuessUpdated();
                     } else {
-                      handleIncorrectGuess(language.name);
+                      handleWrongGuessUpdated(language.name);
                     }
                   }}
                   disabled={isTransitioning}
