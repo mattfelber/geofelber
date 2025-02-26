@@ -27,6 +27,7 @@ const LanguageTrainer = () => {
   const [currentLanguage, setCurrentLanguage] = useState<Language | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const [encouragement, setEncouragement] = useState('');
   const [options, setOptions] = useState<Language[]>([]);
   const [history, setHistory] = useState<Language[]>([]);
@@ -34,7 +35,19 @@ const LanguageTrainer = () => {
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [seenLanguages, setSeenLanguages] = useState<Set<string>>(new Set());
+
+  // Load saved streaks from localStorage
+  useEffect(() => {
+    const savedStreak = localStorage.getItem('languageStreak');
+    const savedBestStreak = localStorage.getItem('languageBestStreak');
+    
+    if (savedStreak) {
+      setStreak(parseInt(savedStreak, 10));
+    }
+    if (savedBestStreak) {
+      setBestStreak(parseInt(savedBestStreak, 10));
+    }
+  }, []);
 
   useEffect(() => {
     selectNewLanguage();
@@ -76,7 +89,6 @@ const LanguageTrainer = () => {
     setShowCorrect(false);
 
     if (addToHistory) {
-      setSeenLanguages(prev => new Set(prev).add(newLanguage.name));
       setHistory(prev => {
         const newHistory = [...prev.slice(0, historyIndex + 1), newLanguage];
         setHistoryIndex(newHistory.length - 1);
@@ -90,15 +102,17 @@ const LanguageTrainer = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     
-    // Only increment streak if:
-    // 1. We're at the latest point in history (not reviewing)
-    // 2. This is a new language we haven't seen before
-    const isReviewing = historyIndex < history.length - 1;
-    if (!isReviewing && currentLanguage && !seenLanguages.has(currentLanguage.name)) {
-      setStreak(prev => prev + 1);
-    }
+    // Increment streak on every correct answer
+    const newStreak = streak + 1;
+    setStreak(newStreak);
     
-    // Always show encouragement on correct answer
+    // Update best streak if needed
+    if (newStreak > bestStreak) {
+      setBestStreak(newStreak);
+      localStorage.setItem('languageBestStreak', newStreak.toString());
+    }
+    localStorage.setItem('languageStreak', newStreak.toString());
+    
     setEncouragement(getEncouragement());
     setShowCorrect(true);
     
@@ -113,6 +127,7 @@ const LanguageTrainer = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setStreak(0);
+    localStorage.setItem('languageStreak', '0');
     setEncouragement('');
     setWrongAnswer(selectedName);
     setShowCorrect(true);
@@ -265,7 +280,24 @@ const LanguageTrainer = () => {
               fontSize: { xs: '0.875rem', sm: '1rem' },
             }}
           >
-            Streak: {streak}
+            <Box component="span">Streak: {streak}</Box>
+            {streak > 0 && (
+              <Box 
+                component="span" 
+                sx={{ 
+                  fontSize: { xs: '0.75rem', sm: '0.8em' },
+                  opacity: 0.8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  '&::before': {
+                    content: '"•"',
+                    mx: { xs: 0.5, sm: 1 },
+                  }
+                }}
+              >
+                Best: {bestStreak}
+              </Box>
+            )}
           </Typography>
           <Button
             variant="outlined"
