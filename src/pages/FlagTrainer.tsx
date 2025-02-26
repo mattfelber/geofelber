@@ -582,7 +582,7 @@ const FlagTrainer = () => {
                   }}
                   disabled={isTransitioning}
                   sx={{
-                    height: '100%',
+                    height: '45px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
