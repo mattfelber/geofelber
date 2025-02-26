@@ -83,7 +83,7 @@ const Home = () => {
               maxWidth: '600px',
             }}
           >
-            Level up your GeoGuessr game with our specialized training tools. Master languages and flags to become a location-guessing expert!
+            Level up your Geography skills with our specialized training tools. Master languages and flags to become a location-guessing expert!
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
             <Button 
