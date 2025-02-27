@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Button, Box, IconButton, useTheme, useMediaQuery } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, IconButton, useTheme, useMediaQuery, Typography } from '@mui/material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -39,15 +39,33 @@ const Navbar = () => {
 
   if (isMobile) {
     return (
-      <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
-        <Toolbar>
+      <AppBar position="fixed" sx={{ bgcolor: 'background.paper', zIndex: theme.zIndex.drawer + 1 }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Typography
+            variant="h6"
+            component={RouterLink}
+            to="/"
+            sx={{
+              color: 'primary.main',
+              textDecoration: 'none',
+              fontWeight: 'bold'
+            }}
+          >
+            GeoFelber
+          </Typography>
+          
           {user && (
             <>
               <IconButton
-                edge="start"
-                color="inherit"
+                edge="end"
+                color="primary"
                 aria-label="menu"
                 onClick={handleMenu}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'rgba(88, 204, 2, 0.1)'
+                  }
+                }}
               >
                 <MenuIcon />
               </IconButton>
@@ -55,6 +73,21 @@ const Navbar = () => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                PaperProps={{
+                  elevation: 4,
+                  sx: {
+                    mt: 5,
+                    minWidth: 200
+                  }
+                }}
               >
                 {navItems.map((item) => (
                   <MenuItem
@@ -63,12 +96,44 @@ const Navbar = () => {
                     to={item.path}
                     onClick={handleClose}
                     selected={isActive(item.path)}
+                    sx={{
+                      py: 1.5,
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: 'primary.dark',
+                        }
+                      }
+                    }}
                   >
                     {item.label}
                   </MenuItem>
                 ))}
-                <MenuItem component={RouterLink} to="/profile">Profile</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem 
+                  component={RouterLink} 
+                  to="/profile" 
+                  onClick={handleClose}
+                  selected={isActive('/profile')}
+                  sx={{
+                    py: 1.5,
+                    '&.Mui-selected': {
+                      backgroundColor: 'primary.main',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'primary.dark',
+                      }
+                    }
+                  }}
+                >
+                  Profile
+                </MenuItem>
+                <MenuItem 
+                  onClick={handleLogout}
+                  sx={{ py: 1.5 }}
+                >
+                  Logout
+                </MenuItem>
               </Menu>
             </>
           )}
@@ -78,6 +143,7 @@ const Navbar = () => {
               to="/login"
               color="primary"
               variant="contained"
+              sx={{ ml: 'auto' }}
             >
               Login
             </Button>
@@ -88,8 +154,21 @@ const Navbar = () => {
   }
 
   return (
-    <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
+    <AppBar position="fixed" sx={{ bgcolor: 'background.paper', zIndex: theme.zIndex.drawer + 1 }}>
       <Toolbar>
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          sx={{
+            color: 'primary.main',
+            textDecoration: 'none',
+            fontWeight: 'bold',
+            mr: 4
+          }}
+        >
+          GeoFelber
+        </Typography>
         <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
           {navItems.map((item) => (
             <Button
@@ -104,14 +183,23 @@ const Navbar = () => {
           ))}
         </Box>
         {user ? (
-          <>
-            <Button color="inherit" component={RouterLink} to="/profile">
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              component={RouterLink}
+              to="/profile"
+              color="primary"
+              variant={isActive('/profile') ? 'contained' : 'text'}
+            >
               Profile
             </Button>
-            <Button color="inherit" onClick={handleLogout}>
+            <Button
+              onClick={handleLogout}
+              color="primary"
+              variant="outlined"
+            >
               Logout
             </Button>
-          </>
+          </Box>
         ) : (
           <Button
             component={RouterLink}

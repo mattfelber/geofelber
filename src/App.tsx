@@ -78,7 +78,8 @@ function App() {
               width: '100vw',
               margin: 0,
               padding: 0,
-              overflowX: 'hidden'
+              overflowX: 'hidden',
+              pt: { xs: 7, sm: 8 }
             }}
           >
             <Navbar />
