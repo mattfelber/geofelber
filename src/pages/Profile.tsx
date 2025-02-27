@@ -128,7 +128,7 @@ export default function Profile() {
   };
 
   const applyFilters = () => {
-    const filterStats = (stats: FlagStats[] | LanguageStats[]) => {
+    const filterStats = <T extends { success_rate: number; total_attempts: number }>(stats: T[]): T[] => {
       return stats.filter(stat => 
         stat.success_rate >= successRateRange[0] && 
         stat.success_rate <= successRateRange[1] &&
@@ -136,16 +136,19 @@ export default function Profile() {
       );
     };
 
-    setFilteredFlagStats(filterStats(flagStats));
-    setFilteredLanguageStats(filterStats(languageStats));
+    const filteredFlags = filterStats<FlagStats>(flagStats);
+    const filteredLanguages = filterStats<LanguageStats>(languageStats);
+    
+    setFilteredFlagStats(filteredFlags);
+    setFilteredLanguageStats(filteredLanguages);
     handleFilterDialogClose();
   };
 
   const resetFilters = () => {
     setSuccessRateRange([0, 100]);
     setMinAttempts(0);
-    setFilteredFlagStats(flagStats);
-    setFilteredLanguageStats(languageStats);
+    setFilteredFlagStats([...flagStats]);
+    setFilteredLanguageStats([...languageStats]);
     handleFilterDialogClose();
   };
 
