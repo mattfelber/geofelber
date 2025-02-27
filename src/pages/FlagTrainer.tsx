@@ -100,14 +100,17 @@ const FlagTrainer = () => {
   };
 
   const handleGuess = async (selectedCountry: Country) => {
+    if (isTransitioning) return;
     setSessionAttempts(prev => prev + 1);
     
     const isCorrect = selectedCountry.code === currentCountry?.code;
+    console.log('Selected:', selectedCountry.name, 'Correct:', currentCountry?.name, 'isCorrect:', isCorrect);
     
     if (isCorrect) {
       handleCorrectGuess();
       setSessionCorrect(prev => prev + 1);
     } else {
+      console.log('Wrong answer selected:', selectedCountry.name);
       handleIncorrectGuess(selectedCountry.name);
     }
 
@@ -145,18 +148,22 @@ const FlagTrainer = () => {
   };
 
   const handleIncorrectGuess = (selectedName: string) => {
+    console.log('Handling incorrect guess:', selectedName);
     if (isTransitioning) return;
     setIsTransitioning(true);
     setStreak(0);
     setEncouragement('');
     setWrongAnswer(selectedName);
+    console.log('Set wrong answer to:', selectedName);
     setShowCorrect(true);
+    
     setTimeout(() => {
+      console.log('Timeout triggered - resetting wrong answer');
       setWrongAnswer(null);
       setShowCorrect(false);
       selectNewCountry();
       setIsTransitioning(false);
-    }, 2000);
+    }, 500); // Changed to match correct answer delay
   };
 
   const goBack = () => {
@@ -296,25 +303,25 @@ const FlagTrainer = () => {
                   whiteSpace: 'normal',
                   wordBreak: 'break-word',
                   maxWidth: '100%',
-                  bgcolor: wrongAnswer === option.name 
-                    ? 'error.main' 
+                  backgroundColor: wrongAnswer === option.name 
+                    ? '#d32f2f !important' // Force error color
                     : (showCorrect && option.code === currentCountry?.code)
-                      ? 'success.main'
-                      : 'background.paper',
-                  color: (wrongAnswer === option.name || (showCorrect && option.code === currentCountry?.code))
-                    ? 'white'
-                    : 'text.primary',
+                      ? '#2e7d32 !important' // Force success color
+                      : undefined,
                   '&:hover': {
-                    bgcolor: 'background.paper',
-                    '@media (hover: none)': {
-                      bgcolor: 'background.paper',
-                    }
+                    backgroundColor: wrongAnswer === option.name 
+                      ? '#d32f2f !important'
+                      : (showCorrect && option.code === currentCountry?.code)
+                        ? '#2e7d32 !important'
+                        : undefined,
                   },
-                  '&:active': {
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                  },
-                  transition: 'all 0.2s ease-in-out'
+                  '&:disabled': {
+                    backgroundColor: wrongAnswer === option.name 
+                      ? '#d32f2f !important'
+                      : (showCorrect && option.code === currentCountry?.code)
+                        ? '#2e7d32 !important'
+                        : undefined,
+                  }
                 }}
               >
                 {option.name}
