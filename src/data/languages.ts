@@ -1,5 +1,6 @@
 export interface Language {
   name: string;
+  code: string;
   sample: string;
   hints: {
     writing: string;
@@ -14,6 +15,7 @@ export const languages: Language[] = [
   // East Asian Languages
   {
     name: "Chinese",
+    code: "zh",
     sample: "我昨天去买东西了。店里的服务员说这件衣服打八折。我觉得很便宜就买下来了。",
     hints: {
       writing: "Characters are built from radicals (components). Unlike Japanese kanji, Chinese characters are used exclusively",
@@ -25,6 +27,7 @@ export const languages: Language[] = [
   },
   {
     name: "Japanese",
+    code: "ja",
     sample: "私は新しい漢字を覚えながら、日本語の勉強を頑張っています。来週の試験に向けて準備をしています。",
     hints: {
       writing: "Mix of hiragana (ひらがな), katakana (カタカナ), and kanji (漢字) Each has specific uses",
@@ -36,6 +39,7 @@ export const languages: Language[] = [
   },
   {
     name: "Korean",
+    code: "ko",
     sample: "제가 한국어를 배우고 있는데 발음이 조금 어려워요. 특히 받침이 있는 단어들이 어렵습니다.",
     hints: {
       writing: "Letters grouped into syllable blocks Each block reads left-to-right top-to-bottom",
@@ -47,6 +51,7 @@ export const languages: Language[] = [
   },
   {
     name: "Cantonese",
+    code: "yue",
     sample: "今日我去街市買嘢食。個售貨員話呢件衫有八折。我覺得好平就買咗啦。",
     hints: {
       writing: "Uses traditional Chinese characters Special characters not in Mandarin: 嘅 咗 喺",
@@ -58,6 +63,7 @@ export const languages: Language[] = [
   },
   {
     name: "Kazakh",
+    code: "kk",
     sample: "Мен қазақ тілін үйреніп жатырмын. Дауысты дыбыстардың үндестігі өте қызық.",
     hints: {
       writing: "Uses Cyrillic with nine additional letters: ә ғ қ ң ө ұ ү һ і Some now use Latin script",
@@ -69,6 +75,7 @@ export const languages: Language[] = [
   },
   {
     name: "Kyrgyz",
+    code: "ky",
     sample: "Мен кыргыз тилин үйрөнүп жатам. Тамгалардын жазылышы кызыктуу экен.",
     hints: {
       writing: "Uses Cyrillic with additional letters ң ө ү җ Similar to Kazakh but with җ instead of ж",
@@ -80,6 +87,7 @@ export const languages: Language[] = [
   },
   {
     name: "Maori",
+    code: "mi",
     sample: "Kei te ako au i te reo Māori. Ka rawe te wairua o ngā kupu me te tangi o te reo.",
     hints: {
       writing: "Uses Latin with macrons (ā ē ī ō ū) to show long vowels",
@@ -91,6 +99,7 @@ export const languages: Language[] = [
   },
   {
     name: "Chamorro",
+    code: "ch",
     sample: "Hu tungo' na debi di bai hu eyak i fino' Chamoru. Gof interesante i gramåtika-ña.",
     hints: {
       writing: "Uses Latin with ñ and ng. Distinctive use of ' for glottal stop",
@@ -102,6 +111,7 @@ export const languages: Language[] = [
   },
   {
     name: "Lao",
+    code: "lo",
     sample: "ຂ້ອຍກຳລັງຮຽນພາສາລາວ. ຕົວອັກສອນແລະການອອກສຽງແມ່ນໜ້າສົນໃຈຫຼາຍ.",
     hints: {
       writing: "Unique script derived from Khmer No spaces between words Tone marks above/below letters",
@@ -113,6 +123,7 @@ export const languages: Language[] = [
   },
   {
     name: "Thai",
+    code: "th",
     sample: "ผมกำลังเรียนภาษาไทยอยู่ที่มหาวิทยาลัย ถึงแม้ว่าการออกเสียงจะยาก แต่ผมก็ชอบเรียนมาก",
     hints: {
       writing: "Curvy script that hangs from a line with distinctive vowel marks above and below consonants",
@@ -123,6 +134,7 @@ export const languages: Language[] = [
   },
   {
     name: "Vietnamese",
+    code: "vi",
     sample: "Tôi đã đến nhà hàng để ăn phở. Người phục vụ đề nghị món phở đặc biệt với thịt bò tái và gân.",
     hints: {
       writing: "Latin alphabet with extensive diacritical marks for tones and vowel modifications",
@@ -133,6 +145,7 @@ export const languages: Language[] = [
   },
   {
     name: "Khmer",
+    code: "km",
     sample: "ខ្ញុំចូលចិត្តរៀនភាសាខ្មែរ។ អក្សរខ្មែរមានរូបរាងមូលៗ ហើយមានសញ្ញានៅពីលើនិងក្រោម។",
     hints: {
       writing: "Round curvy script with complex consonant clusters stacked vertically and horizontally",
@@ -143,6 +156,7 @@ export const languages: Language[] = [
   },
   {
     name: "Burmese",
+    code: "my",
     sample: "ကျွန်တော် မြန်မာစာ သင်နေပါတယ်။ အက္ခရာတွေရဲ့ ပုံသဏ္ဍာန်က အရမ်းလှပါတယ်။",
     hints: {
       writing: "Circular letters derived from ancient Brahmi script Uses stacked consonants and vowel marks",
@@ -154,6 +168,7 @@ export const languages: Language[] = [
   },
   {
     name: "Indonesian",
+    code: "id",
     sample: "Saya sedang belajar bahasa Indonesia. Tata bahasanya sangat teratur dan mudah dipelajari.",
     hints: {
       writing: "Uses Latin alphabet No tones or special characters",
@@ -165,6 +180,7 @@ export const languages: Language[] = [
   },
   {
     name: "Malay",
+    code: "ms",
     sample: "Saya sedang belajar bahasa Melayu. Sistem ejaan dan tatabahasa sangat menarik.",
     hints: {
       writing: "Uses Latin alphabet with occasional Arabic loanwords in Jawi script",
@@ -176,6 +192,7 @@ export const languages: Language[] = [
   },
   {
     name: "Sinhala",
+    code: "si",
     sample: "මම සිංහල භාෂාව ඉගෙන ගන්නවා. අකුරු වල හැඩය සහ ලියන විදිය ගොඩක් ලස්සනයි.",
     hints: {
       writing: "Unique curved script with circular letters Vowel marks above below and after letters",
@@ -187,6 +204,7 @@ export const languages: Language[] = [
   },
   {
     name: "Tagalog",
+    code: "tl",
     sample: "Nag-aaral ako ng wikang Tagalog. Ang mga panlapi ay napakaimportante sa wika.",
     hints: {
       writing: "Modern Tagalog uses Latin alphabet with ñ Traditional Baybayin script exists",
@@ -198,6 +216,7 @@ export const languages: Language[] = [
   },
   {
     name: "Persian",
+    code: "fa",
     sample: "من در حال یادگیری زبان فارسی هستم. خط و دستور زبان بسیار جالب است.",
     hints: {
       writing: "Modified Arabic script written right to left Special letters not in Arabic: پ چ ژ گ",
@@ -210,6 +229,7 @@ export const languages: Language[] = [
   // South Asian Languages
   {
     name: "Bengali",
+    code: "bn",
     sample: "আমি বাংলা ভাষা শিখছি। এই ভাষার লিপি খুব সুন্দর। বিশেষ করে যুক্তাক্ষরগুলি খুব আকর্ষণীয়।",
     hints: {
       writing: "Curvy script with distinctive horizontal line on top Letters connect at top",
@@ -220,6 +240,7 @@ export const languages: Language[] = [
   },
   {
     name: "Hindi",
+    code: "hi",
     sample: "मैं हिंदी सीख रहा हूं। मुझे देवनागरी लिपि में लिखना बहुत पसंद है। अक्षरों के ऊपर की रेखा मुझे आकर्षित करती है।",
     hints: {
       writing: "Devanagari script with horizontal line connecting letters Letters hang from top line",
@@ -230,6 +251,7 @@ export const languages: Language[] = [
   },
   {
     name: "Tamil",
+    code: "ta",
     sample: "நான் தமிழ் கற்றுக்கொண்டிருக்கிறேன். எழுத்துக்கள் வட்டமாகவும் கோடுகளாகவும் இருக்கின்றன.",
     hints: {
       writing: "Round shapes and curves very few straight lines Letters represent syllables",
@@ -240,6 +262,7 @@ export const languages: Language[] = [
   },
   {
     name: "Sinhala",
+    code: "si",
     sample: "මම සිංහල ඉගෙන ගන්නවා. අකුරු ලියන විදිය පුදුම සුන්දරයි. විශේෂයෙන් වටරවුම් හැඩය.",
     hints: {
       writing: "Round shapes and curves with distinctive loops and swirls",
@@ -251,6 +274,7 @@ export const languages: Language[] = [
   },
   {
     name: "Greek",
+    code: "el",
     sample: "Μαθαίνω ελληνικά και μου αρέσει πολύ. Το σύστημα τονισμού είναι πολύ ενδιαφέρον.",
     hints: {
       writing: "Uses Greek alphabet with diacritical marks for stress",
@@ -262,6 +286,7 @@ export const languages: Language[] = [
   },
   {
     name: "Russian",
+    code: "ru",
     sample: "Я изучаю русский язык уже два года. Сложнее всего для меня правильно использовать глагольные приставки.",
     hints: {
       writing: "Cyrillic alphabet with 33 letters including ж ц щ я ю",
@@ -273,6 +298,7 @@ export const languages: Language[] = [
   },
   {
     name: "Ukrainian",
+    code: "uk",
     sample: "Я вивчаю українську мову. Система відмінків та наголосів дуже цікава.",
     hints: {
       writing: "Uses Cyrillic with special letters є ї ґ",
@@ -284,6 +310,7 @@ export const languages: Language[] = [
   },
   {
     name: "Bulgarian",
+    code: "bg",
     sample: "Изучавам български език. Системата на членуването е много интересна.",
     hints: {
       writing: "Uses Cyrillic without ы ъ is a full vowel",
@@ -295,6 +322,7 @@ export const languages: Language[] = [
   },
   {
     name: "Serbian",
+    code: "sr",
     sample: "Учим српски језик. Занимљиво је што се користе и ћирилица и латиница.",
     hints: {
       writing: "Uses both Cyrillic and Latin scripts interchangeably",
@@ -306,6 +334,7 @@ export const languages: Language[] = [
   },
   {
     name: "Mongolian",
+    code: "mn",
     sample: "Би монгол хэлийг сурч байна. Үсэг үсгийн хэлбэр нь маш онцгой бөгөөд сонирхолтой байдаг.",
     hints: {
       writing: "Cyrillic with additional letters ө ү Uses vowel harmony extensively",
@@ -317,6 +346,7 @@ export const languages: Language[] = [
   },
   {
     name: "Georgian",
+    code: "ka",
     sample: "მე ვსწავლობ ქართულ ენას. დამწერლობის სისტემა ძალიან ლამაზია.",
     hints: {
       writing: "Unique script with no uppercase/lowercase Round shapes",
@@ -328,6 +358,7 @@ export const languages: Language[] = [
   },
   {
     name: "Armenian",
+    code: "hy",
     sample: "Ես սովորում եմ հայերեն։ Հայկական տառերի ձևերն ու գրելաոճը շատ գեղեցիկ են։",
     hints: {
       writing: "Unique alphabet with 39 letters Each letter has distinct uppercase and lowercase",
@@ -339,6 +370,7 @@ export const languages: Language[] = [
   },
   {
     name: "Hungarian",
+    code: "hu",
     sample: "Magyarul tanulok, és nagyon tetszik a nyelv. A magánhangzó-harmónia különösen érdekes.",
     hints: {
       writing: "Uses Latin with special characters á é í ó ö ő ú ü ű",
@@ -350,6 +382,7 @@ export const languages: Language[] = [
   },
   {
     name: "Romanian",
+    code: "ro",
     sample: "Învăț limba română. Sistemul de cazuri și articolele sunt foarte interesante.",
     hints: {
       writing: "Uses Latin with special letters ă â î ș ț",
@@ -361,6 +394,7 @@ export const languages: Language[] = [
   },
   {
     name: "Croatian",
+    code: "hr",
     sample: "Učim hrvatski jezik i jako mi se sviđa. Sustav naglasaka i padežni sustav su vrlo zanimljivi.",
     hints: {
       writing: "Uses Latin alphabet with special characters č ć đ š ž",
@@ -372,6 +406,7 @@ export const languages: Language[] = [
   },
   {
     name: "Slovenian",
+    code: "sl",
     sample: "Učim se slovenščino. Dvojina in naglasni sistem sta zelo posebna in zanimiva.",
     hints: {
       writing: "Uses Latin alphabet with č š ž Special marks for stressed syllables",
@@ -383,6 +418,7 @@ export const languages: Language[] = [
   },
   {
     name: "Danish",
+    code: "da",
     sample: "Jeg kan godt lide at spise rød grød med fløde.",
     hints: {
       writing: "Uses æ, ø, å. Letters 'w', 'q', 'z' only in loan words. Silent 'd' in many words.",
@@ -394,6 +430,7 @@ export const languages: Language[] = [
   },
   {
     name: "Faroese",
+    code: "fo",
     sample: "Eg læri føroyskt, tí tað er eitt forvitnisligt mál. Ljóðskipanin er sera áhugaverd.",
     hints: {
       writing: "Uses Latin with special letters á æ ð í ó ú ý ø",
@@ -405,6 +442,7 @@ export const languages: Language[] = [
   },
   {
     name: "Finnish",
+    code: "fi",
     sample: "Opiskelen suomen kieltä. Sijamuotojärjestelmä on erittäin mielenkiintoinen.",
     hints: {
       writing: "Uses ä, ö. Double letters very common (both vowels and consonants). No b, c, f, q, w, x, z in native words.",
@@ -416,6 +454,7 @@ export const languages: Language[] = [
   },
   {
     name: "Greenlandic",
+    code: "kl",
     sample: "Kalaallisut ilinniarpara. Oqaatsit katiterneqarsinnaanerat pikkunarpoq.",
     hints: {
       writing: "Uses Latin alphabet with special characters like ĸ",
@@ -427,6 +466,7 @@ export const languages: Language[] = [
   },
   {
     name: "Icelandic",
+    code: "is",
     sample: "Ég er að læra íslensku. Fallbeygingar og hljóðkerfi tungumálsins eru mjög áhugaverð.",
     hints: {
       writing: "Uses Latin with special letters á é í ó ú ý þ ð æ ö",
@@ -438,6 +478,7 @@ export const languages: Language[] = [
   },
   {
     name: "Norwegian",
+    code: "no",
     sample: "Jeg lærer norsk, og jeg liker språket veldig godt. Tonefallet er fascinerende.",
     hints: {
       writing: "Uses Latin with æ ø å Special rules for compound words",
@@ -449,6 +490,7 @@ export const languages: Language[] = [
   },
   {
     name: "Swedish",
+    code: "sv",
     sample: "Jag lär mig svenska och tycker mycket om språket. Tonaccenten är särskilt intressant.",
     hints: {
       writing: "Uses Latin with special letters å ä ö Special rules for en/ett words",
@@ -460,6 +502,7 @@ export const languages: Language[] = [
   },
   {
     name: "Spanish",
+    code: "es",
     sample: "Estoy aprendiendo español. Me encantan los tiempos verbales y la riqueza del vocabulario.",
     hints: {
       writing: "Uses Latin alphabet with special ñ and stress marks á é í ó ú",
@@ -471,6 +514,7 @@ export const languages: Language[] = [
   },
   {
     name: "Portuguese",
+    code: "pt",
     sample: "Estou aprendendo português. A nasalização e a conjugação verbal são muito interessantes.",
     hints: {
       writing: "Uses Latin with special marks á â ã ç é ê í ó ô õ ú",
@@ -482,6 +526,7 @@ export const languages: Language[] = [
   },
   {
     name: "Papiamento",
+    code: "pap",
     sample: "Mi ta siña papiamentu. E manera di kombiná palabra ta hopi interesante.",
     hints: {
       writing: "Uses Latin alphabet with ù è ò",
@@ -495,6 +540,7 @@ export const languages: Language[] = [
   // Middle Eastern Languages
   {
     name: "Persian",
+    code: "fa",
     sample: "من دارم زبان فارسی را یاد می‌گیرم. حروف به هم پیوسته و خوشنویسی این زبان خیلی زیباست.",
     hints: {
       writing: "Arabic-based script with four additional letters پ چ ژ گ Written right to left",
@@ -506,6 +552,7 @@ export const languages: Language[] = [
   },
   {
     name: "Hebrew",
+    code: "he",
     sample: "אני לומד עברית כבר שנתיים. המערכת של שורשי המילים עוזרת לי להבין מילים חדשות.",
     hints: {
       writing: "Square script written right to left Vowel points optional in modern writing",
@@ -517,6 +564,7 @@ export const languages: Language[] = [
   },
   {
     name: "Jordanian Arabic",
+    code: "ar",
     sample: "!مرحبا! كيف حالك اليوم",
     hints: {
       writing: "Arabic script. Uses all Arabic letters plus distinctive local pronunciations.",
@@ -528,6 +576,7 @@ export const languages: Language[] = [
   },
   {
     name: "Turkish",
+    code: "tr",
     sample: "Türkçe öğreniyorum. Ses uyumu ve ekler sistemi çok ilginç.",
     hints: {
       writing: "Latin with special letters: ç, ğ, ı, ö, ş, ü. No q, w, x.",

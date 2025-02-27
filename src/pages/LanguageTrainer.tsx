@@ -113,43 +113,59 @@ const LanguageTrainer = () => {
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
-  const handleCorrectGuess = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
+  const handleGuess = async (guess: Language) => {
+    if (!currentLanguage || isTransitioning) return;
     
-    // Increment streak on every correct answer
-    const newStreak = streak + 1;
-    setStreak(newStreak);
+    setSessionAttempts(prev => prev + 1);
+    const isCorrect = guess.name === currentLanguage.name;
     
-    // Update best streak if needed
-    if (newStreak > bestStreak) {
-      setBestStreak(newStreak);
+    if (isCorrect) {
+      setSessionCorrect(prev => prev + 1);
+      setStreak(prev => {
+        const newStreak = prev + 1;
+        if (newStreak > bestStreak) {
+          setBestStreak(newStreak);
+        }
+        return newStreak;
+      });
+      setShowCorrect(true);
+      setEncouragement(getEncouragement());
+    } else {
+      setStreak(0);
+      setWrongAnswer(guess.name);
     }
-    setEncouragement(getEncouragement());
-    setShowCorrect(true);
-    
-    // Wait a moment to show the correct answer highlight
+
+    if (user) {
+      try {
+        await DatabaseService.createLanguageAttempt(user.id, currentLanguage.code, isCorrect);
+      } catch (error) {
+        console.error('Failed to save language attempt:', error);
+      }
+    }
+
+    // Add delay before transitioning
     setTimeout(() => {
+      setShowCorrect(false);
+      setWrongAnswer(null);
       selectNewLanguage();
-      setIsTransitioning(false);
     }, 500);
   };
 
-  const handleIncorrectGuess = (selectedName: string) => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setStreak(0);
-    setEncouragement('');
-    setWrongAnswer(selectedName);
-    setShowCorrect(true);
-    // Reset after 2 seconds
-    setTimeout(() => {
-      setWrongAnswer(null);
-      setShowCorrect(false);
-      selectNewLanguage();
-      setIsTransitioning(false);
-    }, 2000);
-  };
+  // Save practice session when component unmounts
+  useEffect(() => {
+    return () => {
+      if (user && sessionAttempts > 0) {
+        const sessionDuration = Math.round((new Date().getTime() - sessionStart.getTime()) / 1000);
+        DatabaseService.createPracticeSession(
+          user.id,
+          'language',
+          sessionAttempts,
+          sessionCorrect,
+          sessionDuration
+        ).catch(console.error);
+      }
+    };
+  }, [user, sessionAttempts, sessionCorrect, sessionStart]);
 
   const goBack = () => {
     if (historyIndex > 0) {
@@ -200,53 +216,6 @@ const LanguageTrainer = () => {
       selectNewLanguage();
     }
   };
-
-  const handleCorrectGuessUpdated = () => {
-    const newStreak = streak + 1;
-    const newBestStreak = Math.max(bestStreak, streak + 1);
-    setStreak(newStreak);
-    setBestStreak(newBestStreak);
-    setEncouragement(getEncouragement());
-    setShowCorrect(true);
-    setSessionCorrect(prev => prev + 1);
-    setSessionAttempts(prev => prev + 1);
-
-    if (user && currentLanguage) {
-      DatabaseService.updateLearningProgress(user.id, 'language', currentLanguage.code, true)
-        .catch(console.error);
-    }
-
-    setTimeout(() => {
-      selectNewLanguage();
-    }, 1500);
-  };
-
-  const handleWrongGuessUpdated = (wrongLanguageName: string) => {
-    setStreak(0);
-    setWrongAnswer(wrongLanguageName);
-    setSessionAttempts(prev => prev + 1);
-
-    if (user && currentLanguage) {
-      DatabaseService.updateLearningProgress(user.id, 'language', currentLanguage.code, false)
-        .catch(console.error);
-    }
-  };
-
-  // Save practice session when component unmounts
-  useEffect(() => {
-    return () => {
-      if (user && sessionAttempts > 0) {
-        const sessionDuration = Math.round((new Date().getTime() - sessionStart.getTime()) / 1000);
-        DatabaseService.createPracticeSession(
-          user.id,
-          'language',
-          sessionAttempts,
-          sessionCorrect,
-          sessionDuration
-        ).catch(console.error);
-      }
-    };
-  }, [user, sessionAttempts, sessionCorrect, sessionStart]);
 
   if (!currentLanguage) return null;
 
@@ -562,13 +531,7 @@ const LanguageTrainer = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  onClick={() => {
-                    if (language.name === currentLanguage?.name) {
-                      handleCorrectGuessUpdated();
-                    } else {
-                      handleWrongGuessUpdated(language.name);
-                    }
-                  }}
+                  onClick={() => handleGuess(language)}
                   disabled={isTransitioning}
                   sx={{
                     height: '45px',

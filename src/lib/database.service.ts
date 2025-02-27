@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { TrainerType, UserScore, LearningProgress, PracticeSession } from './database.types';
+import type { TrainerType, UserScore, LearningProgress } from './database.types';
 
 export class DatabaseService {
   static async getUserScore(userId: string, trainerType: TrainerType): Promise<UserScore | null> {
@@ -137,6 +137,40 @@ export class DatabaseService {
       progress,
       recentSessions
     };
+  }
+
+  static async createFlagAttempt(userId: string, flagCode: string, isCorrect: boolean, correctAnswer: string, userAnswer: string) {
+    const { data, error } = await supabase
+      .from('flag_attempts')
+      .insert({
+        user_id: userId,
+        flag_code: flagCode,
+        is_correct: isCorrect,
+        attempt_date: new Date().toISOString(),
+        correct_answer: correctAnswer,
+        user_answer: userAnswer
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  static async createLanguageAttempt(userId: string, languageCode: string, isCorrect: boolean) {
+    const { data, error } = await supabase
+      .from('language_attempts')
+      .insert({
+        user_id: userId,
+        language_code: languageCode,
+        is_correct: isCorrect,
+        attempt_date: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 
   static async insertFlagAttempt(

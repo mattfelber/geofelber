@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { FlagAttempt } from '../lib/database.types';
@@ -18,10 +18,6 @@ import {
   Card,
   CardContent,
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   TableSortLabel,
   Slider,
   InputAdornment,
@@ -36,6 +32,8 @@ interface FlagStats {
   incorrect_attempts: number;
   last_attempt_date: string;
   success_rate: number;
+  last_correct_answer: string;
+  last_user_answer: string;
 }
 
 type SortField = 'country' | 'total_attempts' | 'correct_attempts' | 'incorrect_attempts' | 'success_rate' | 'last_attempt_date';
@@ -69,7 +67,8 @@ export default function Profile() {
         const { data: attempts, error } = await supabase
           .from('flag_attempts')
           .select('*')
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .order('attempt_date', { ascending: false });
 
         if (error) throw error;
 
@@ -84,6 +83,8 @@ export default function Profile() {
               incorrect_attempts: 0,
               last_attempt_date: attempt.attempt_date,
               success_rate: 0,
+              last_correct_answer: attempt.correct_answer,
+              last_user_answer: attempt.user_answer
             };
 
             existing.total_attempts++;
@@ -95,6 +96,8 @@ export default function Profile() {
 
             if (new Date(attempt.attempt_date) > new Date(existing.last_attempt_date)) {
               existing.last_attempt_date = attempt.attempt_date;
+              existing.last_correct_answer = attempt.correct_answer;
+              existing.last_user_answer = attempt.user_answer;
             }
 
             existing.success_rate = (existing.correct_attempts / existing.total_attempts) * 100;
@@ -110,7 +113,13 @@ export default function Profile() {
           setOverallStats({
             totalAttempts: total,
             correctAttempts: correct,
-            successRate: (correct / total) * 100,
+            successRate: total > 0 ? (correct / total) * 100 : 0,
+          });
+        } else {
+          setOverallStats({
+            totalAttempts: 0,
+            correctAttempts: 0,
+            successRate: 0,
           });
         }
       } catch (error) {
@@ -331,7 +340,7 @@ export default function Profile() {
                         direction={sortOrder}
                         onClick={() => handleSort('country')}
                       >
-                        Flag
+                        Country
                       </TableSortLabel>
                     </TableCell>
                     <TableCell align="right">
@@ -370,7 +379,7 @@ export default function Profile() {
                         Success Rate
                       </TableSortLabel>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="right">
                       <TableSortLabel
                         active={sortField === 'last_attempt_date'}
                         direction={sortOrder}
@@ -379,22 +388,29 @@ export default function Profile() {
                         Last Attempt
                       </TableSortLabel>
                     </TableCell>
+                    <TableCell align="right">Last Answer</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredStats.map((stat) => (
                     <TableRow key={stat.flag_code}>
-                      <TableCell>
+                      <TableCell component="th" scope="row">
                         {countryDisplayNames[stat.flag_code.toUpperCase()] || stat.flag_code}
                       </TableCell>
                       <TableCell align="right">{stat.total_attempts}</TableCell>
                       <TableCell align="right">{stat.correct_attempts}</TableCell>
                       <TableCell align="right">{stat.incorrect_attempts}</TableCell>
+                      <TableCell align="right">{stat.success_rate.toFixed(1)}%</TableCell>
                       <TableCell align="right">
-                        {stat.success_rate.toFixed(1)}%
-                      </TableCell>
-                      <TableCell>
                         {new Date(stat.last_attempt_date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell align="right">
+                        {stat.last_user_answer}
+                        {stat.last_user_answer !== stat.last_correct_answer && (
+                          <Typography component="span" color="error">
+                            {" "}(Correct: {stat.last_correct_answer})
+                          </Typography>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

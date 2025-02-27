@@ -7,20 +7,12 @@ import {
   Card,
   CardContent,
   Grid,
-  Alert,
-  Paper,
-  IconButton,
-  Tooltip,
-  alpha,
-  Collapse
+  Alert
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { Country } from '../data/countries';
 import { countries } from '../data/countries';
 import { DatabaseService } from '../lib/database.service';
-import InfoIcon from '@mui/icons-material/Info';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const getEncouragement = () => {
   const messages = ['Great job! 🎯', 'Perfect! ⭐', 'Excellent! 🏆', 'Amazing! 🌟'];
@@ -37,12 +29,8 @@ const FlagTrainer = () => {
   const [wrongAnswer, setWrongAnswer] = useState<string | null>(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [sessionStart] = useState<Date>(new Date());
   const [sessionAttempts, setSessionAttempts] = useState(0);
   const [sessionCorrect, setSessionCorrect] = useState(0);
-  const [history, setHistory] = useState<Country[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
-  const [showFacts, setShowFacts] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -85,136 +73,63 @@ const FlagTrainer = () => {
     
     setCurrentCountry(newCountry);
     setOptions(allOptions);
-    setShowFacts(false);
-    setWrongAnswer(null);
     setShowCorrect(false);
 
     if (addToHistory) {
-      setHistory(prev => {
-        const newHistory = [...prev.slice(0, historyIndex + 1), newCountry];
-        setHistoryIndex(newHistory.length - 1);
-        return newHistory;
-      });
+      // Removed history state and related logic
     }
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
-  const handleGuess = async (selectedCountry: Country) => {
-    if (isTransitioning) return;
-    setSessionAttempts(prev => prev + 1);
+  const handleGuess = async (guess: Country) => {
+    if (!currentCountry || isTransitioning) return;
     
-    const isCorrect = selectedCountry.code === currentCountry?.code;
-    console.log('Selected:', selectedCountry.name, 'Correct:', currentCountry?.name, 'isCorrect:', isCorrect);
+    setSessionAttempts(prev => prev + 1);
+    const isCorrect = guess.name === currentCountry.name;
     
     if (isCorrect) {
-      handleCorrectGuess();
       setSessionCorrect(prev => prev + 1);
+      setStreak(prev => {
+        const newStreak = prev + 1;
+        if (newStreak > bestStreak) {
+          setBestStreak(newStreak);
+        }
+        return newStreak;
+      });
+      setShowCorrect(true);
+      setEncouragement(getEncouragement());
     } else {
-      console.log('Wrong answer selected:', selectedCountry.name);
-      handleIncorrectGuess(selectedCountry.name);
+      setStreak(0);
+      setWrongAnswer(guess.name);
     }
 
-    // Record the attempt in the database
-    if (user && currentCountry) {
+    if (user) {
       try {
         await DatabaseService.createFlagAttempt(
           user.id,
           currentCountry.code,
-          isCorrect
+          isCorrect,
+          currentCountry.name,
+          guess.name
         );
       } catch (error) {
         console.error('Error recording flag attempt:', error);
       }
     }
-  };
 
-  const handleCorrectGuess = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    
-    const newStreak = streak + 1;
-    setStreak(newStreak);
-    
-    if (newStreak > bestStreak) {
-      setBestStreak(newStreak);
-    }
-    setEncouragement(getEncouragement());
-    setShowCorrect(true);
-    
+    // Add delay before transitioning
     setTimeout(() => {
-      selectNewCountry();
-      setIsTransitioning(false);
-    }, 500);
-  };
-
-  const handleIncorrectGuess = (selectedName: string) => {
-    console.log('Handling incorrect guess:', selectedName);
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setStreak(0);
-    setEncouragement('');
-    setWrongAnswer(selectedName);
-    console.log('Set wrong answer to:', selectedName);
-    setShowCorrect(true);
-    
-    setTimeout(() => {
-      console.log('Timeout triggered - resetting wrong answer');
-      setWrongAnswer(null);
       setShowCorrect(false);
+      setWrongAnswer(null);
       selectNewCountry();
-      setIsTransitioning(false);
-    }, 500); // Changed to match correct answer delay
-  };
-
-  const goBack = () => {
-    if (historyIndex > 0) {
-      const prevIndex = historyIndex - 1;
-      const prevCountry = history[prevIndex];
-      setHistoryIndex(prevIndex);
-      
-      const wrongOptions = countries
-        .filter(c => c.code !== prevCountry.code)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      
-      const allOptions = [...wrongOptions, prevCountry]
-        .sort(() => Math.random() - 0.5);
-      
-      setCurrentCountry(prevCountry);
-      setOptions(allOptions);
-      setShowFacts(false);
-      setEncouragement('');
-    }
-  };
-
-  const goForward = () => {
-    if (historyIndex < history.length - 1) {
-      const nextIndex = historyIndex + 1;
-      const nextCountry = history[nextIndex];
-      setHistoryIndex(nextIndex);
-      
-      const wrongOptions = countries
-        .filter(c => c.code !== nextCountry.code)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      
-      const allOptions = [...wrongOptions, nextCountry]
-        .sort(() => Math.random() - 0.5);
-      
-      setCurrentCountry(nextCountry);
-      setOptions(allOptions);
-      setShowFacts(false);
-      setEncouragement('');
-    } else {
-      selectNewCountry();
-    }
+    }, 500);
   };
 
   useEffect(() => {
     const savePracticeSession = async () => {
       if (user && sessionAttempts > 0) {
         const sessionDuration = Math.round(
-          (new Date().getTime() - sessionStart.getTime()) / 1000
+          (new Date().getTime() - new Date().getTime()) / 1000
         );
         try {
           await DatabaseService.createPracticeSession(
@@ -235,7 +150,7 @@ const FlagTrainer = () => {
       window.removeEventListener('beforeunload', savePracticeSession);
       savePracticeSession();
     };
-  }, [user, sessionAttempts, sessionCorrect, sessionStart]);
+  }, [user, sessionAttempts, sessionCorrect]);
 
   if (!currentCountry) return null;
 
