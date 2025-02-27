@@ -549,19 +549,21 @@ const LanguageTrainer = () => {
                       ? 'error.main' 
                       : (showCorrect && language.name === currentLanguage?.name)
                         ? 'success.main'
-                        : 'background.paper',
-                    color: (wrongAnswer === language.name || (showCorrect && language.name === currentLanguage?.name))
-                      ? 'white'
-                      : 'text.primary',
+                        : 'primary.main',
+                    color: 'white',
                     '&:hover': {
-                      bgcolor: 'background.paper',
-                      '@media (hover: none)': {
-                        bgcolor: 'background.paper',
-                      }
+                      bgcolor: wrongAnswer === language.name 
+                        ? 'error.dark' 
+                        : (showCorrect && language.name === currentLanguage?.name)
+                          ? 'success.dark'
+                          : 'primary.dark',
                     },
                     '&:active': {
-                      bgcolor: 'primary.main',
-                      color: 'white',
+                      bgcolor: wrongAnswer === language.name 
+                        ? 'error.dark' 
+                        : (showCorrect && language.name === currentLanguage?.name)
+                          ? 'success.dark'
+                          : 'primary.dark',
                     },
                     transition: 'all 0.3s ease-in-out',
                     transform: wrongAnswer === language.name || (showCorrect && language.name === currentLanguage?.name)
@@ -570,16 +572,16 @@ const LanguageTrainer = () => {
                     boxShadow: wrongAnswer === language.name || (showCorrect && language.name === currentLanguage?.name)
                       ? '0 4px 20px rgba(0, 0, 0, 0.2)'
                       : 'none',
-                    border: wrongAnswer === language.name
-                      ? '2px solid #d32f2f'
-                      : (showCorrect && language.name === currentLanguage?.name)
-                        ? '2px solid #2e7d32'
-                        : '2px solid transparent',
+                    border: 'none',
                     touchAction: 'manipulation',
                     WebkitTapHighlightColor: 'transparent',
                     '@media (hover: none)': {
                       '&:hover': {
-                        bgcolor: 'background.paper'
+                        bgcolor: wrongAnswer === language.name 
+                          ? 'error.main' 
+                          : (showCorrect && language.name === currentLanguage?.name)
+                            ? 'success.main'
+                            : 'primary.main',
                       }
                     }
                   }}
