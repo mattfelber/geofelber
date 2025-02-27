@@ -289,18 +289,32 @@ const FlagTrainer = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  bgcolor: showCorrect ? (
-                    option.code === currentCountry?.code ? 
-                      'success.main' : 
-                      (option.name === wrongAnswer ? 'error.main' : 'primary.main')
-                  ) : 'primary.main',
+                  textAlign: 'center',
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  lineHeight: 1.2,
+                  padding: { xs: '6px 12px', sm: '8px 16px' },
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  maxWidth: '100%',
+                  bgcolor: wrongAnswer === option.name 
+                    ? 'error.main' 
+                    : (showCorrect && option.code === currentCountry?.code)
+                      ? 'success.main'
+                      : 'background.paper',
+                  color: (wrongAnswer === option.name || (showCorrect && option.code === currentCountry?.code))
+                    ? 'white'
+                    : 'text.primary',
                   '&:hover': {
-                    bgcolor: showCorrect ? (
-                      option.code === currentCountry?.code ? 
-                        'success.dark' : 
-                        (option.name === wrongAnswer ? 'error.dark' : 'primary.dark')
-                    ) : 'primary.dark'
-                  }
+                    bgcolor: 'background.paper',
+                    '@media (hover: none)': {
+                      bgcolor: 'background.paper',
+                    }
+                  },
+                  '&:active': {
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                  },
+                  transition: 'all 0.2s ease-in-out'
                 }}
               >
                 {option.name}
