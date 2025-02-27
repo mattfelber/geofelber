@@ -17,7 +17,16 @@ import {
   TableRow,
   Card,
   CardContent,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TableSortLabel,
+  Slider,
+  InputAdornment,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { countryDisplayNames } from '../data/countryDisplay';
 
 interface FlagStats {
@@ -29,22 +38,34 @@ interface FlagStats {
   success_rate: number;
 }
 
+type SortField = 'country' | 'total_attempts' | 'correct_attempts' | 'incorrect_attempts' | 'success_rate' | 'last_attempt_date';
+type SortOrder = 'asc' | 'desc';
+
 export default function Profile() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [flagStats, setFlagStats] = useState<FlagStats[]>([]);
+  const [filteredStats, setFilteredStats] = useState<FlagStats[]>([]);
   const [overallStats, setOverallStats] = useState({
     totalAttempts: 0,
     correctAttempts: 0,
     successRate: 0,
   });
 
+  // Filtering states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [successRateRange, setSuccessRateRange] = useState<[number, number]>([0, 100]);
+  const [minAttempts, setMinAttempts] = useState(0);
+
+  // Sorting states
+  const [sortField, setSortField] = useState<SortField>('total_attempts');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
   useEffect(() => {
     async function loadStats() {
       if (!user) return;
 
       try {
-        // Load flag attempts
         const { data: attempts, error } = await supabase
           .from('flag_attempts')
           .select('*')
@@ -53,7 +74,6 @@ export default function Profile() {
         if (error) throw error;
 
         if (attempts && attempts.length > 0) {
-          // Process attempts into statistics
           const statsMap = new Map<string, FlagStats>();
           
           attempts.forEach((attempt: FlagAttempt) => {
@@ -73,7 +93,6 @@ export default function Profile() {
               existing.incorrect_attempts++;
             }
 
-            // Update last attempt date if more recent
             if (new Date(attempt.attempt_date) > new Date(existing.last_attempt_date)) {
               existing.last_attempt_date = attempt.attempt_date;
             }
@@ -84,8 +103,8 @@ export default function Profile() {
 
           const stats = Array.from(statsMap.values());
           setFlagStats(stats);
+          setFilteredStats(stats);
 
-          // Calculate overall statistics
           const total = attempts.length;
           const correct = attempts.filter(a => a.is_correct).length;
           setOverallStats({
@@ -103,6 +122,85 @@ export default function Profile() {
 
     loadStats();
   }, [user]);
+
+  // Apply filters and sorting
+  useEffect(() => {
+    let result = [...flagStats];
+
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(stat => 
+        countryDisplayNames[stat.flag_code.toUpperCase()]?.toLowerCase().includes(query) ||
+        stat.flag_code.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply success rate filter
+    result = result.filter(stat => 
+      stat.success_rate >= successRateRange[0] && 
+      stat.success_rate <= successRateRange[1]
+    );
+
+    // Apply minimum attempts filter
+    if (minAttempts > 0) {
+      result = result.filter(stat => stat.total_attempts >= minAttempts);
+    }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      let compareA: string | number = 0;
+      let compareB: string | number = 0;
+
+      switch (sortField) {
+        case 'country':
+          compareA = countryDisplayNames[a.flag_code.toUpperCase()] || a.flag_code;
+          compareB = countryDisplayNames[b.flag_code.toUpperCase()] || b.flag_code;
+          break;
+        case 'total_attempts':
+          compareA = a.total_attempts;
+          compareB = b.total_attempts;
+          break;
+        case 'correct_attempts':
+          compareA = a.correct_attempts;
+          compareB = b.correct_attempts;
+          break;
+        case 'incorrect_attempts':
+          compareA = a.incorrect_attempts;
+          compareB = b.incorrect_attempts;
+          break;
+        case 'success_rate':
+          compareA = a.success_rate;
+          compareB = b.success_rate;
+          break;
+        case 'last_attempt_date':
+          compareA = new Date(a.last_attempt_date).getTime();
+          compareB = new Date(b.last_attempt_date).getTime();
+          break;
+      }
+
+      if (typeof compareA === 'string' && typeof compareB === 'string') {
+        return sortOrder === 'asc' 
+          ? compareA.localeCompare(compareB)
+          : compareB.localeCompare(compareA);
+      }
+
+      return sortOrder === 'asc'
+        ? (compareA as number) - (compareB as number)
+        : (compareB as number) - (compareA as number);
+    });
+
+    setFilteredStats(result);
+  }, [flagStats, searchQuery, successRateRange, minAttempts, sortField, sortOrder]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('desc');
+    }
+  };
 
   if (loading) {
     return (
@@ -172,6 +270,54 @@ export default function Profile() {
           </Paper>
         </Grid>
 
+        {/* Filters */}
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Filters
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Search Country"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography gutterBottom>
+                  Success Rate Range (%)
+                </Typography>
+                <Slider
+                  value={successRateRange}
+                  onChange={(_, newValue) => setSuccessRateRange(newValue as [number, number])}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={100}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Minimum Attempts"
+                  value={minAttempts}
+                  onChange={(e) => setMinAttempts(parseInt(e.target.value) || 0)}
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+
         {/* Detailed Flag Statistics */}
         <Grid item xs={12}>
           <Paper elevation={3}>
@@ -179,16 +325,64 @@ export default function Profile() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Flag</TableCell>
-                    <TableCell align="right">Total Attempts</TableCell>
-                    <TableCell align="right">Correct</TableCell>
-                    <TableCell align="right">Incorrect</TableCell>
-                    <TableCell align="right">Success Rate</TableCell>
-                    <TableCell>Last Attempt</TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={sortField === 'country'}
+                        direction={sortOrder}
+                        onClick={() => handleSort('country')}
+                      >
+                        Flag
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={sortField === 'total_attempts'}
+                        direction={sortOrder}
+                        onClick={() => handleSort('total_attempts')}
+                      >
+                        Total Attempts
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={sortField === 'correct_attempts'}
+                        direction={sortOrder}
+                        onClick={() => handleSort('correct_attempts')}
+                      >
+                        Correct
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={sortField === 'incorrect_attempts'}
+                        direction={sortOrder}
+                        onClick={() => handleSort('incorrect_attempts')}
+                      >
+                        Incorrect
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={sortField === 'success_rate'}
+                        direction={sortOrder}
+                        onClick={() => handleSort('success_rate')}
+                      >
+                        Success Rate
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={sortField === 'last_attempt_date'}
+                        direction={sortOrder}
+                        onClick={() => handleSort('last_attempt_date')}
+                      >
+                        Last Attempt
+                      </TableSortLabel>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {flagStats.map((stat) => (
+                  {filteredStats.map((stat) => (
                     <TableRow key={stat.flag_code}>
                       <TableCell>
                         {countryDisplayNames[stat.flag_code.toUpperCase()] || stat.flag_code}
