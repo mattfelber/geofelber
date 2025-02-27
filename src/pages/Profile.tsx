@@ -18,6 +18,7 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
+import { countryDisplayNames } from '../data/countryDisplay';
 
 interface FlagStats {
   flag_code: string;
@@ -189,7 +190,9 @@ export default function Profile() {
                 <TableBody>
                   {flagStats.map((stat) => (
                     <TableRow key={stat.flag_code}>
-                      <TableCell>{stat.flag_code}</TableCell>
+                      <TableCell>
+                        {countryDisplayNames[stat.flag_code.toUpperCase()] || stat.flag_code}
+                      </TableCell>
                       <TableCell align="right">{stat.total_attempts}</TableCell>
                       <TableCell align="right">{stat.correct_attempts}</TableCell>
                       <TableCell align="right">{stat.incorrect_attempts}</TableCell>
