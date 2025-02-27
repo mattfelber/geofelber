@@ -39,7 +39,7 @@ const Navbar = () => {
 
   if (isMobile) {
     return (
-      <AppBar position="fixed" sx={{ bgcolor: 'background.paper', zIndex: theme.zIndex.drawer + 1 }}>
+      <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography
             variant="h6"
@@ -84,7 +84,7 @@ const Navbar = () => {
                 PaperProps={{
                   elevation: 4,
                   sx: {
-                    mt: 5,
+                    mt: 2,
                     minWidth: 200
                   }
                 }}
@@ -154,21 +154,8 @@ const Navbar = () => {
   }
 
   return (
-    <AppBar position="fixed" sx={{ bgcolor: 'background.paper', zIndex: theme.zIndex.drawer + 1 }}>
+    <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
       <Toolbar>
-        <Typography
-          variant="h6"
-          component={RouterLink}
-          to="/"
-          sx={{
-            color: 'primary.main',
-            textDecoration: 'none',
-            fontWeight: 'bold',
-            mr: 4
-          }}
-        >
-          GeoFelber
-        </Typography>
         <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
           {navItems.map((item) => (
             <Button
@@ -183,23 +170,14 @@ const Navbar = () => {
           ))}
         </Box>
         {user ? (
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              component={RouterLink}
-              to="/profile"
-              color="primary"
-              variant={isActive('/profile') ? 'contained' : 'text'}
-            >
+          <>
+            <Button color="inherit" component={RouterLink} to="/profile">
               Profile
             </Button>
-            <Button
-              onClick={handleLogout}
-              color="primary"
-              variant="outlined"
-            >
+            <Button color="inherit" onClick={handleLogout}>
               Logout
             </Button>
-          </Box>
+          </>
         ) : (
           <Button
             component={RouterLink}
