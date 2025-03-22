@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, Button, TextField, Typography, Container, Alert, Link, Paper } from '@mui/material';
+import { Box, Button, TextField, Typography, Container, Alert, Link, Paper, Divider } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
@@ -9,7 +9,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, continueAsGuest } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -34,6 +34,11 @@ export default function Login() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGuestAccess = () => {
+    continueAsGuest();
+    navigate('/');
   };
 
   return (
@@ -92,12 +97,24 @@ export default function Login() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3 }}
               disabled={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
-            <Box sx={{ textAlign: 'center' }}>
+            
+            <Divider sx={{ my: 3 }}>or</Divider>
+            
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleGuestAccess}
+              disabled={isLoading}
+            >
+              Continue as Guest
+            </Button>
+
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Link href="#/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>

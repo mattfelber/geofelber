@@ -9,6 +9,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
+  isGuest: boolean;
+  continueAsGuest: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,6 +19,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(() => {
+    // Check if user was previously in guest mode
+    return localStorage.getItem('isGuest') === 'true';
+  });
 
   useEffect(() => {
     // Get initial session
@@ -31,6 +37,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      // If user logs in, disable guest mode
+      if (session) {
+        setIsGuest(false);
+        localStorage.removeItem('isGuest');
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -53,13 +64,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     });
-
     if (error) throw error;
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    // Also clear guest mode on sign out
+    setIsGuest(false);
+    localStorage.removeItem('isGuest');
+  };
+
+  const continueAsGuest = () => {
+    setIsGuest(true);
+    localStorage.setItem('isGuest', 'true');
   };
 
   const value = {
@@ -69,13 +87,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signOut,
     loading,
+    isGuest,
+    continueAsGuest,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
