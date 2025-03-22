@@ -24,6 +24,8 @@ export default function Signup() {
       setError('');
       setIsLoading(true);
       await signUp(email, password);
+      // Store email for verification resend
+      localStorage.setItem('signupEmail', email);
       setEmailSent(true);
     } catch (error: any) {
       setError(error.message || 'Failed to create an account');
