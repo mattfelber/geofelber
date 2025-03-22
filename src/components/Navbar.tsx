@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 
 const Navbar = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isGuest } = useAuth();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -31,7 +31,8 @@ const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navItems = user ? [
+  // Show nav items for both logged-in users and guests
+  const navItems = (user || isGuest) ? [
     { path: '/', label: 'Home' },
     { path: '/language-trainer', label: 'Language Trainer' },
     { path: '/flag-trainer', label: 'Flag Trainer' },
@@ -53,100 +54,49 @@ const Navbar = () => {
           >
             GeoFelber
           </Typography>
-          
-          {user && (
+          {(user || isGuest) && (
             <>
               <IconButton
-                edge="end"
+                size="large"
+                edge="start"
                 color="primary"
                 aria-label="menu"
                 onClick={handleMenu}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'rgba(88, 204, 2, 0.1)'
-                  }
-                }}
               >
                 <MenuIcon />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
                 anchorOrigin={{
                   vertical: 'top',
                   horizontal: 'right',
                 }}
+                keepMounted
                 transformOrigin={{
                   vertical: 'top',
                   horizontal: 'right',
                 }}
-                PaperProps={{
-                  elevation: 4,
-                  sx: {
-                    mt: 2,
-                    minWidth: 200
-                  }
-                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
               >
                 {navItems.map((item) => (
                   <MenuItem
                     key={item.path}
+                    onClick={handleClose}
                     component={RouterLink}
                     to={item.path}
-                    onClick={handleClose}
                     selected={isActive(item.path)}
-                    sx={{
-                      py: 1.5,
-                      '&.Mui-selected': {
-                        backgroundColor: 'primary.main',
-                        color: 'white',
-                        '&:hover': {
-                          backgroundColor: 'primary.dark',
-                        }
-                      }
-                    }}
                   >
                     {item.label}
                   </MenuItem>
                 ))}
-                <MenuItem 
-                  component={RouterLink} 
-                  to="/profile" 
-                  onClick={handleClose}
-                  selected={isActive('/profile')}
-                  sx={{
-                    py: 1.5,
-                    '&.Mui-selected': {
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                      '&:hover': {
-                        backgroundColor: 'primary.dark',
-                      }
-                    }
-                  }}
-                >
-                  Profile
-                </MenuItem>
-                <MenuItem 
-                  onClick={handleLogout}
-                  sx={{ py: 1.5 }}
-                >
-                  Logout
-                </MenuItem>
+                {user ? (
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                ) : isGuest ? (
+                  <MenuItem component={RouterLink} to="/login">Sign In</MenuItem>
+                ) : null}
               </Menu>
             </>
-          )}
-          {!user && (
-            <Button
-              component={RouterLink}
-              to="/login"
-              color="primary"
-              variant="contained"
-              sx={{ ml: 'auto' }}
-            >
-              Login
-            </Button>
           )}
         </Toolbar>
       </AppBar>
@@ -155,39 +105,57 @@ const Navbar = () => {
 
   return (
     <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
-      <Toolbar>
-        <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          sx={{
+            color: 'primary.main',
+            textDecoration: 'none',
+            fontWeight: 'bold'
+          }}
+        >
+          GeoFelber
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
           {navItems.map((item) => (
             <Button
               key={item.path}
               component={RouterLink}
               to={item.path}
               color="primary"
-              variant={isActive(item.path) ? 'contained' : 'text'}
+              sx={{
+                fontWeight: isActive(item.path) ? 700 : 400,
+                textDecoration: isActive(item.path) ? 'underline' : 'none',
+              }}
             >
               {item.label}
             </Button>
           ))}
+          {user ? (
+            <>
+              <Button
+                component={RouterLink}
+                to="/profile"
+                color="primary"
+                sx={{
+                  fontWeight: isActive('/profile') ? 700 : 400,
+                  textDecoration: isActive('/profile') ? 'underline' : 'none',
+                }}
+              >
+                Profile
+              </Button>
+              <Button color="primary" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          ) : isGuest ? (
+            <Button component={RouterLink} to="/login" color="primary">
+              Sign In
+            </Button>
+          ) : null}
         </Box>
-        {user ? (
-          <>
-            <Button color="inherit" component={RouterLink} to="/profile">
-              Profile
-            </Button>
-            <Button color="inherit" onClick={handleLogout}>
-              Logout
-            </Button>
-          </>
-        ) : (
-          <Button
-            component={RouterLink}
-            to="/login"
-            color="primary"
-            variant="contained"
-          >
-            Login
-          </Button>
-        )}
       </Toolbar>
     </AppBar>
   );

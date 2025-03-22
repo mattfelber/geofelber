@@ -2,7 +2,19 @@ import { supabase } from './supabase';
 import type { TrainerType, UserScore, LearningProgress } from './database.types';
 
 export class DatabaseService {
-  static async getUserScore(userId: string, trainerType: TrainerType): Promise<UserScore | null> {
+  private static getGuestKey(trainerType: TrainerType) {
+    return `guest_${trainerType}_score`;
+  }
+
+  static async getUserScore(userId: string | 'guest', trainerType: TrainerType): Promise<UserScore | null> {
+    if (userId === 'guest') {
+      const guestData = localStorage.getItem(this.getGuestKey(trainerType));
+      if (guestData) {
+        return JSON.parse(guestData);
+      }
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('user_scores')
       .select('*')
@@ -14,7 +26,20 @@ export class DatabaseService {
     return data;
   }
 
-  static async updateUserScore(userId: string, trainerType: TrainerType, score: number, bestStreak: number) {
+  static async updateUserScore(userId: string | 'guest', trainerType: TrainerType, score: number, bestStreak: number) {
+    if (userId === 'guest') {
+      const guestScore: UserScore = {
+        user_id: 'guest',
+        trainer_type: trainerType,
+        score,
+        best_streak: bestStreak,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      localStorage.setItem(this.getGuestKey(trainerType), JSON.stringify(guestScore));
+      return;
+    }
+
     const { data: existingScore } = await supabase
       .from('user_scores')
       .select('*')
@@ -37,7 +62,16 @@ export class DatabaseService {
     }
   }
 
-  static async getLearningProgress(userId: string, trainerType: TrainerType, itemId: string): Promise<LearningProgress | null> {
+  static async getLearningProgress(userId: string | 'guest', trainerType: TrainerType, itemId: string): Promise<LearningProgress | null> {
+    if (userId === 'guest') {
+      const key = `guest_${trainerType}_progress_${itemId}`;
+      const guestData = localStorage.getItem(key);
+      if (guestData) {
+        return JSON.parse(guestData);
+      }
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('learning_progress')
       .select('*')
@@ -50,12 +84,22 @@ export class DatabaseService {
     return data;
   }
 
-  static async updateLearningProgress(
-    userId: string,
-    trainerType: TrainerType,
-    itemId: string,
-    isCorrect: boolean
-  ) {
+  static async updateLearningProgress(userId: string | 'guest', trainerType: TrainerType, itemId: string, correctCount: number, incorrectCount: number) {
+    if (userId === 'guest') {
+      const key = `guest_${trainerType}_progress_${itemId}`;
+      const progress: LearningProgress = {
+        user_id: 'guest',
+        trainer_type: trainerType,
+        item_id: itemId,
+        correct_count: correctCount,
+        incorrect_count: incorrectCount,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      localStorage.setItem(key, JSON.stringify(progress));
+      return;
+    }
+
     const { data: existingProgress } = await supabase
       .from('learning_progress')
       .select('*')
@@ -71,18 +115,17 @@ export class DatabaseService {
           user_id: userId,
           trainer_type: trainerType,
           item_id: itemId,
-          correct_attempts: isCorrect ? 1 : 0,
-          wrong_attempts: isCorrect ? 0 : 1,
-          last_attempt_at: new Date().toISOString()
+          correct_count: correctCount,
+          incorrect_count: incorrectCount
         }]);
       if (error) throw error;
     } else {
       const { error } = await supabase
         .from('learning_progress')
         .update({
-          correct_attempts: existingProgress.correct_attempts + (isCorrect ? 1 : 0),
-          wrong_attempts: existingProgress.wrong_attempts + (isCorrect ? 0 : 1),
-          last_attempt_at: new Date().toISOString()
+          correct_count: correctCount,
+          incorrect_count: incorrectCount,
+          updated_at: new Date()
         })
         .eq('user_id', userId)
         .eq('trainer_type', trainerType)

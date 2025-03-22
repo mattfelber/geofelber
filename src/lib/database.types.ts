@@ -1,31 +1,30 @@
 export type TrainerType = 'language' | 'flag';
 
 export interface UserScore {
-  id: string;
+  id?: string;
   user_id: string;
   trainer_type: TrainerType;
   score: number;
   best_streak: number;
-  total_attempts: number;
-  correct_attempts: number;
+  total_attempts?: number;
+  correct_attempts?: number;
   created_at: string;
   updated_at: string;
 }
 
 export interface LearningProgress {
-  id: string;
+  id?: string;
   user_id: string;
   trainer_type: TrainerType;
   item_id: string;
-  correct_attempts: number;
-  wrong_attempts: number;
-  last_attempt_at: string;
+  correct_count: number;
+  incorrect_count: number;
   created_at: string;
   updated_at: string;
 }
 
 export interface FlagAttempt {
-  id: string;
+  id?: string;
   user_id: string;
   flag_code: string;
   is_correct: boolean;
@@ -36,7 +35,7 @@ export interface FlagAttempt {
 }
 
 export interface LanguageAttempt {
-  id: string;
+  id?: string;
   user_id: string;
   language_code: string;
   is_correct: boolean;
@@ -45,13 +44,13 @@ export interface LanguageAttempt {
 }
 
 export interface PracticeSession {
-  id: string;
+  id?: string;
   user_id: string;
   trainer_type: TrainerType;
   start_time: string;
-  end_time: string | null;
-  total_attempts: number;
-  correct_attempts: number;
+  end_time?: string;
+  total_attempts?: number;
+  correct_attempts?: number;
   created_at: string;
   updated_at: string;
 }

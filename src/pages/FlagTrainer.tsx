@@ -4,8 +4,6 @@ import {
   Button,
   Container,
   Typography,
-  Card,
-  CardContent,
   Grid,
   Alert
 } from '@mui/material';
@@ -20,7 +18,7 @@ const getEncouragement = () => {
 };
 
 const FlagTrainer = () => {
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const [currentCountry, setCurrentCountry] = useState<Country | null>(null);
   const [options, setOptions] = useState<Country[]>([]);
   const [streak, setStreak] = useState(0);
@@ -33,8 +31,9 @@ const FlagTrainer = () => {
   const [sessionCorrect, setSessionCorrect] = useState(0);
 
   useEffect(() => {
-    if (user) {
-      DatabaseService.getUserScore(user.id, 'flag')
+    const userId = user?.id || (isGuest ? 'guest' : null);
+    if (userId) {
+      DatabaseService.getUserScore(userId, 'flag')
         .then((score) => {
           if (score) {
             setStreak(score.score);
@@ -43,218 +42,153 @@ const FlagTrainer = () => {
         })
         .catch(console.error);
     }
-  }, [user]);
+  }, [user, isGuest]);
 
   useEffect(() => {
-    if (user) {
-      DatabaseService.updateUserScore(user.id, 'flag', streak, bestStreak)
+    const userId = user?.id || (isGuest ? 'guest' : null);
+    if (userId) {
+      DatabaseService.updateUserScore(userId, 'flag', streak, bestStreak)
         .catch(console.error);
     }
-  }, [streak, bestStreak, user]);
+  }, [streak, bestStreak, user, isGuest]);
+
+  const getRandomCountries = (count: number, exclude?: Country): Country[] => {
+    const availableCountries = countries.filter(c => c !== exclude);
+    const shuffled = [...availableCountries].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  };
+
+  const generateQuestion = () => {
+    const newCurrentCountry = getRandomCountries(1)[0];
+    const otherOptions = getRandomCountries(3, newCurrentCountry);
+    const allOptions = [...otherOptions, newCurrentCountry].sort(() => Math.random() - 0.5);
+
+    setCurrentCountry(newCurrentCountry);
+    setOptions(allOptions);
+    setWrongAnswer(null);
+    setShowCorrect(false);
+    setIsTransitioning(false);
+  };
 
   useEffect(() => {
-    selectNewCountry();
+    generateQuestion();
   }, []);
 
-  const selectNewCountry = (addToHistory = true) => {
+  const handleAnswer = async (selectedCountry: Country) => {
+    if (isTransitioning || !currentCountry) return;
+
     setIsTransitioning(true);
-    let newCountry;
-    do {
-      newCountry = countries[Math.floor(Math.random() * countries.length)];
-    } while (newCountry === currentCountry);
-    
-    const wrongOptions = countries
-      .filter(c => c.code !== newCountry.code)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
-    
-    const allOptions = [...wrongOptions, newCountry]
-      .sort(() => Math.random() - 0.5);
-    
-    setCurrentCountry(newCountry);
-    setOptions(allOptions);
-    setShowCorrect(false);
-
-    if (addToHistory) {
-      // Removed history state and related logic
-    }
-    setTimeout(() => setIsTransitioning(false), 300);
-  };
-
-  const handleGuess = async (guess: Country) => {
-    if (!currentCountry || isTransitioning) return;
-    
     setSessionAttempts(prev => prev + 1);
-    const isCorrect = guess.name === currentCountry.name;
-    
+
+    const isCorrect = selectedCountry.code === currentCountry.code;
+    const userId = user?.id || (isGuest ? 'guest' : null);
+
     if (isCorrect) {
       setSessionCorrect(prev => prev + 1);
-      setStreak(prev => {
-        const newStreak = prev + 1;
-        if (newStreak > bestStreak) {
-          setBestStreak(newStreak);
-        }
-        return newStreak;
-      });
-      setShowCorrect(true);
+      setStreak(prev => prev + 1);
+      setBestStreak(prev => Math.max(prev, streak + 1));
       setEncouragement(getEncouragement());
+      setShowCorrect(true);
+
+      if (userId) {
+        await DatabaseService.updateLearningProgress(
+          userId,
+          'flag',
+          currentCountry.code,
+          1,
+          0
+        );
+      }
     } else {
       setStreak(0);
-      setWrongAnswer(guess.name);
-    }
+      setWrongAnswer(selectedCountry.name);
+      setShowCorrect(false);
 
-    if (user) {
-      try {
-        await DatabaseService.createFlagAttempt(
-          user.id,
+      if (userId) {
+        await DatabaseService.updateLearningProgress(
+          userId,
+          'flag',
           currentCountry.code,
-          isCorrect,
-          currentCountry.name,
-          guess.name
+          0,
+          1
         );
-      } catch (error) {
-        console.error('Error recording flag attempt:', error);
       }
     }
 
-    // Add delay before transitioning
-    setTimeout(() => {
-      setShowCorrect(false);
-      setWrongAnswer(null);
-      selectNewCountry();
-    }, 500);
+    setTimeout(generateQuestion, 1500);
   };
 
-  useEffect(() => {
-    const savePracticeSession = async () => {
-      if (user && sessionAttempts > 0) {
-        const sessionDuration = Math.round(
-          (new Date().getTime() - new Date().getTime()) / 1000
-        );
-        try {
-          await DatabaseService.createPracticeSession(
-            user.id,
-            'flag',
-            sessionAttempts,
-            sessionCorrect,
-            sessionDuration
-          );
-        } catch (error) {
-          console.error('Error saving practice session:', error);
-        }
-      }
-    };
-
-    window.addEventListener('beforeunload', savePracticeSession);
-    return () => {
-      window.removeEventListener('beforeunload', savePracticeSession);
-      savePracticeSession();
-    };
-  }, [user, sessionAttempts, sessionCorrect]);
-
-  if (!currentCountry) return null;
+  const accuracy = sessionAttempts > 0
+    ? Math.round((sessionCorrect / sessionAttempts) * 100)
+    : 0;
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ 
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        py: 2 
-      }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4, textAlign: 'center' }}>
+        <Typography variant="h4" component="h1" gutterBottom>
           Flag Trainer
         </Typography>
-
-        <Card sx={{ mb: 2 }}>
-          <CardContent>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={4}>
-                <Typography variant="body2" color="text.secondary">
-                  Score: {sessionCorrect}
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body2" color="text.secondary">
-                  Streak: {streak}
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body2" color="text.secondary">
-                  Best: {bestStreak}
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {currentCountry && (
-          <Box sx={{ textAlign: 'center', mb: 2 }}>
-            <img
-              src={`https://flagcdn.com/w320/${currentCountry.code.toLowerCase()}.png`}
-              alt="Flag"
-              style={{ maxWidth: '100%', maxHeight: '35vh', width: 'auto' }}
-            />
-          </Box>
-        )}
-
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          {options.map((option) => (
-            <Grid item xs={6} key={option.code}>
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={() => handleGuess(option)}
-                disabled={isTransitioning}
-                sx={{
-                  height: '45px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                  lineHeight: 1.2,
-                  padding: { xs: '6px 12px', sm: '8px 16px' },
-                  whiteSpace: 'normal',
-                  wordBreak: 'break-word',
-                  maxWidth: '100%',
-                  backgroundColor: wrongAnswer === option.name 
-                    ? '#d32f2f !important' // Force error color
-                    : (showCorrect && option.code === currentCountry?.code)
-                      ? '#2e7d32 !important' // Force success color
-                      : undefined,
-                  '&:hover': {
-                    backgroundColor: wrongAnswer === option.name 
-                      ? '#d32f2f !important'
-                      : (showCorrect && option.code === currentCountry?.code)
-                        ? '#2e7d32 !important'
-                        : undefined,
-                  },
-                  '&:disabled': {
-                    backgroundColor: wrongAnswer === option.name 
-                      ? '#d32f2f !important'
-                      : (showCorrect && option.code === currentCountry?.code)
-                        ? '#2e7d32 !important'
-                        : undefined,
-                  }
-                }}
-              >
-                {option.name}
-              </Button>
-            </Grid>
-          ))}
-        </Grid>
-
-        {encouragement && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {encouragement}
-          </Alert>
-        )}
-
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 'auto' }}>
-          Session Attempts: {sessionAttempts}
+        <Typography variant="subtitle1" color="text.secondary">
+          Current Streak: {streak} | Best Streak: {bestStreak}
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary">
+          Session Accuracy: {accuracy}% ({sessionCorrect}/{sessionAttempts})
         </Typography>
       </Box>
+
+      {currentCountry && (
+        <>
+          <Box sx={{ mb: 4, textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
+              Which country does this flag belong to?
+            </Typography>
+            <Box
+              component="img"
+              src={`https://flagcdn.com/${currentCountry.code.toLowerCase()}.svg`}
+              alt="Country flag"
+              sx={{
+                width: '100%',
+                maxWidth: 300,
+                height: 'auto',
+                borderRadius: 1,
+                boxShadow: 2,
+              }}
+            />
+          </Box>
+
+          <Grid container spacing={2}>
+            {options.map((country) => (
+              <Grid item xs={12} sm={6} key={country.code}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => handleAnswer(country)}
+                  disabled={isTransitioning}
+                  sx={{
+                    py: 2,
+                    textTransform: 'none',
+                    bgcolor: 'background.paper',
+                  }}
+                >
+                  {country.name}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+
+          {encouragement && showCorrect && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {encouragement}
+            </Alert>
+          )}
+
+          {wrongAnswer && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              Incorrect! You selected {wrongAnswer}. The correct answer is {currentCountry.name}.
+            </Alert>
+          )}
+        </>
+      )}
     </Container>
   );
 };
