@@ -8,6 +8,7 @@ import FlagTrainer from './pages/FlagTrainer';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
+import EmailVerification from './pages/EmailVerification';
 import { AuthProvider } from './contexts/AuthContext';
 import { PrivateRoute } from './components/PrivateRoute';
 
@@ -105,6 +106,7 @@ function App() {
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/verify" element={<EmailVerification />} />
                   <Route
                     path="/"
                     element={
