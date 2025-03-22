@@ -137,7 +137,7 @@ const LanguageTrainer = () => {
 
     if (user) {
       try {
-        await DatabaseService.createLanguageAttempt(user.id, currentLanguage.code, isCorrect);
+        await DatabaseService.updateLearningProgress(user.id, 'language', currentLanguage.code, isCorrect);
       } catch (error) {
         console.error('Failed to save language attempt:', error);
       }

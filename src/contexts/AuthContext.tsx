@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin + '/#/login',
+        emailRedirectTo: 'https://mattfelber.github.io/geofelber/#/login',
       },
     });
 
