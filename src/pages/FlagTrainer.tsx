@@ -90,31 +90,34 @@ const FlagTrainer = () => {
       setEncouragement(getEncouragement());
       setShowCorrect(true);
 
+      // Update database in the background
       if (userId) {
-        await DatabaseService.updateLearningProgress(
+        DatabaseService.updateLearningProgress(
           userId,
           'flag',
           currentCountry.code,
           1,
           0
-        );
+        ).catch(console.error); // Handle any errors silently
       }
     } else {
       setStreak(0);
       setWrongAnswer(selectedCountry.name);
       setShowCorrect(false);
 
+      // Update database in the background
       if (userId) {
-        await DatabaseService.updateLearningProgress(
+        DatabaseService.updateLearningProgress(
           userId,
           'flag',
           currentCountry.code,
           0,
           1
-        );
+        ).catch(console.error); // Handle any errors silently
       }
     }
 
+    // Ensure the transition happens
     setTimeout(generateQuestion, 1500);
   };
 
@@ -161,13 +164,44 @@ const FlagTrainer = () => {
               <Grid item xs={12} sm={6} key={country.code}>
                 <Button
                   fullWidth
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => handleAnswer(country)}
-                  disabled={isTransitioning}
                   sx={{
-                    py: 2,
+                    padding: '16px',
                     textTransform: 'none',
-                    bgcolor: 'background.paper',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    backgroundColor: isTransitioning
+                      ? country.code === currentCountry?.code
+                        ? '#58CC02' // Duolingo green
+                        : wrongAnswer === country.name
+                          ? '#FF4B4B' // Duolingo red
+                          : '#F7F7F7' // Light gray background
+                      : '#F7F7F7',
+                    borderColor: isTransitioning
+                      ? country.code === currentCountry?.code
+                        ? '#58CC02'
+                        : wrongAnswer === country.name
+                          ? '#FF4B4B'
+                          : '#E5E5E5'
+                      : '#E5E5E5',
+                    border: '2px solid',
+                    color: isTransitioning
+                      ? country.code === currentCountry?.code
+                        ? '#FFFFFF'
+                        : wrongAnswer === country.name
+                          ? '#FFFFFF'
+                          : '#4B4B4B'
+                      : '#4B4B4B',
+                    fontWeight: 600,
+                    '&:hover': {
+                      backgroundColor: isTransitioning
+                        ? country.code === currentCountry?.code
+                          ? '#58CC02'
+                          : wrongAnswer === country.name
+                            ? '#FF4B4B'
+                            : '#EEEEEE'
+                        : '#EEEEEE'
+                    }
                   }}
                 >
                   {country.name}
@@ -184,7 +218,7 @@ const FlagTrainer = () => {
 
           {wrongAnswer && (
             <Alert severity="error" sx={{ mt: 2 }}>
-              Incorrect! You selected {wrongAnswer}. The correct answer is {currentCountry.name}.
+              Incorrect! {currentCountry.name} is correct.
             </Alert>
           )}
         </>

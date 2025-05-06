@@ -266,7 +266,7 @@ const LanguageTrainer = () => {
 
           {wrongAnswer && (
             <Alert severity="error" sx={{ mt: 2 }}>
-              Incorrect! You selected {wrongAnswer}. The correct answer is {currentLanguage.name}.
+              Incorrect! {currentLanguage.name} is correct.
             </Alert>
           )}
         </Box>
